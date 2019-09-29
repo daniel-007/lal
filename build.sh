@@ -8,8 +8,10 @@ if [ ! -d ${ROOT_DIR}/bin ]; then
   mkdir bin
 fi
 
-#GitCommitID=`git log --pretty=format:'%h' -n 1`
 GitCommitLog=`git log --pretty=oneline -n 1`
+# 将 log 原始字符串中的单引号替换成双引号
+GitCommitLog=${GitCommitLog//\'/\"}
+
 GitStatus=`git status -s`
 BuildTime=`date +'%Y.%m.%d.%H%M%S'`
 BuildGoVersion=`go version`

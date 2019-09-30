@@ -2,7 +2,7 @@ package httpflv
 
 import (
 	"bufio"
-	"github.com/q191201771/nezha/pkg/log"
+	log "github.com/q191201771/nezha/pkg/nazalog"
 	"github.com/q191201771/nezha/pkg/unique"
 	"net"
 	url2 "net/url"

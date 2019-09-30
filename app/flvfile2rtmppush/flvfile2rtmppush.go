@@ -6,7 +6,7 @@ import (
 	"github.com/q191201771/lal/pkg/httpflv"
 	"github.com/q191201771/lal/pkg/rtmp"
 	"github.com/q191201771/nezha/pkg/bininfo"
-	"github.com/q191201771/nezha/pkg/log"
+	log "github.com/q191201771/nezha/pkg/nazalog"
 	"io"
 	"os"
 	"time"

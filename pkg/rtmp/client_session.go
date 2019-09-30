@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/q191201771/nezha/pkg/bele"
 	"github.com/q191201771/nezha/pkg/connection"
-	"github.com/q191201771/nezha/pkg/log"
+	log "github.com/q191201771/nezha/pkg/nazalog"
 	"github.com/q191201771/nezha/pkg/unique"
 	"net"
 	"net/url"

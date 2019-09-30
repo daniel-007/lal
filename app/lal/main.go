@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/q191201771/lal/pkg/logic"
 	"github.com/q191201771/nezha/pkg/bininfo"
-	"github.com/q191201771/nezha/pkg/log"
+	log "github.com/q191201771/nezha/pkg/nazalog"
 	"net/http"
 	_ "net/http/pprof"
 	"os"

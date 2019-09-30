@@ -2,8 +2,8 @@ package logic
 
 import (
 	"encoding/json"
-	log "github.com/q191201771/nezha/pkg/nazalog"
-	"github.com/q191201771/nezha/pkg/nazajson"
+	log "github.com/q191201771/naza/pkg/nazalog"
+	"github.com/q191201771/naza/pkg/nazajson"
 	"io/ioutil"
 )
 

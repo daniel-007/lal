@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
-	"github.com/q191201771/nezha/pkg/bele"
-	log "github.com/q191201771/nezha/pkg/nazalog"
+	"github.com/q191201771/naza/pkg/bele"
+	log "github.com/q191201771/naza/pkg/nazalog"
 	"io"
 	"time"
 )

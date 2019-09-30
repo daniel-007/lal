@@ -17,10 +17,10 @@ BuildTime=`date +'%Y.%m.%d.%H%M%S'`
 BuildGoVersion=`go version`
 
 LDFlags=" \
-    -X 'github.com/q191201771/nezha/pkg/bininfo.GitCommitLog=${GitCommitLog}' \
-    -X 'github.com/q191201771/nezha/pkg/bininfo.GitStatus=${GitStatus}' \
-    -X 'github.com/q191201771/nezha/pkg/bininfo.BuildTime=${BuildTime}' \
-    -X 'github.com/q191201771/nezha/pkg/bininfo.BuildGoVersion=${BuildGoVersion}' \
+    -X 'github.com/q191201771/naza/pkg/bininfo.GitCommitLog=${GitCommitLog}' \
+    -X 'github.com/q191201771/naza/pkg/bininfo.GitStatus=${GitStatus}' \
+    -X 'github.com/q191201771/naza/pkg/bininfo.BuildTime=${BuildTime}' \
+    -X 'github.com/q191201771/naza/pkg/bininfo.BuildGoVersion=${BuildGoVersion}' \
 "
 
 cd ${ROOT_DIR}/app/lal && go build -ldflags "$LDFlags" -o ${ROOT_DIR}/bin/lal &&

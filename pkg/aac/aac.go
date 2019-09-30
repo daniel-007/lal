@@ -2,7 +2,7 @@ package aac
 
 import (
 	"encoding/hex"
-	log "github.com/q191201771/nezha/pkg/nazalog"
+	log "github.com/q191201771/naza/pkg/nazalog"
 	"io"
 )
 

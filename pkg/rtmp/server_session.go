@@ -63,8 +63,8 @@ func NewServerSession(obs ServerSessionObserver, conn net.Conn) *ServerSession {
 	uk := unique.GenUniqueKey("RTMPPUBSUB")
 	log.Infof("lifecycle new rtmp server session. [%s]", uk)
 	return &ServerSession{
-		conn: connection.New(conn, connection.Config{
-			ReadBufSize: readBufSize,
+		conn: connection.New(conn, func(option *connection.Option) {
+			option.ReadBufSize = readBufSize
 		}),
 		UniqueKey:     uk,
 		obs:           obs,

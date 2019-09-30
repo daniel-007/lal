@@ -403,8 +403,8 @@ func (s *ClientSession) tcpConnect() error {
 		return err
 	}
 
-	s.conn = connection.New(conn, connection.Config{
-		ReadBufSize: readBufSize,
+	s.conn = connection.New(conn, func(option *connection.Option) {
+		option.ReadBufSize = readBufSize
 	})
 	return nil
 }

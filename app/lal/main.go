@@ -56,8 +56,10 @@ func loadConf(confFile string) *logic.Config {
 	return config
 }
 
-func initLog(config log.Config) {
-	if err := log.Init(config); err != nil {
+func initLog(opt log.Option) {
+	if err := log.Init(func(option *log.Option) {
+		*option = opt
+	}); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "initial log failed. err=%+v", err)
 		os.Exit(1)
 	}

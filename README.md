@@ -158,3 +158,9 @@ lal 服务器目标版本roadmap如下：
 
 * [rtmp handshake | rtmp握手简单模式和复杂模式](https://pengrl.com/p/20027/)
 * [rtmp协议中的chunk stream id, message stream id, transaction id, message type id](https://pengrl.com/p/25610/)
+
+#### 联系我
+
+欢迎扫码加我微信，进行技术交流或扯淡。
+
+<img src="https://pengrl.com/images/yoko_vx.jpeg" width="180" height="180" />

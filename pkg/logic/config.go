@@ -10,9 +10,10 @@ package logic
 
 import (
 	"encoding/json"
-	log "github.com/q191201771/naza/pkg/nazalog"
-	"github.com/q191201771/naza/pkg/nazajson"
 	"io/ioutil"
+
+	"github.com/q191201771/naza/pkg/nazajson"
+	log "github.com/q191201771/naza/pkg/nazalog"
 )
 
 type Config struct {

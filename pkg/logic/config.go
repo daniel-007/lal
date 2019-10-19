@@ -63,6 +63,9 @@ func LoadConf(confFile string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !j.Exist("rtmp.addr") {
+		config.RTMP.Addr = ":1935"
+	}
 	if !j.Exist("log.level") {
 		config.Log.Level = log.LevelDebug
 	}

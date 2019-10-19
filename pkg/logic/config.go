@@ -67,7 +67,7 @@ func LoadConf(confFile string) (*Config, error) {
 		config.Log.Level = log.LevelDebug
 	}
 	if !j.Exist("log.filename") {
-		config.Log.Filename = "./logs/lal.log"
+		config.Log.Filename = "./logs/lals.log"
 	}
 	if !j.Exist("log.is_to_stdout") {
 		config.Log.IsToStdout = true

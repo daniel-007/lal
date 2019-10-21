@@ -34,6 +34,15 @@ done
 
 # 跑 go test 生成测试覆盖率
 echo "-----CI coverage-----"
+if [ ! -f "pkg/rtmp/testdata/test.flv" ]; then
+    echo "CHEFERASEME test.flv not exist."
+    if [ ! -d "pkg/rtmp/testdata" ]; then
+        echo "CHEFERASEME mkdir."
+        mkdir "pkg/rtmp/testdata"
+    fi
+    wget https://pengrl.com/images/other/source.200kbps.768x320.flv -O pkg/rtmp/testdata/test.flv
+fi
+
 echo "" > coverage.txt
 for d in $(go list ./... | grep -v vendor | grep pkg); do
     go test -race -coverprofile=profile.out -covermode=atomic $d

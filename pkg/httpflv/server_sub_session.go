@@ -80,7 +80,7 @@ func (session *SubSession) ReadRequest() (err error) {
 
 	items := strings.Split(string(firstLine), " ")
 	if len(items) != 3 || items[0] != "GET" {
-		err = httpFlvErr
+		err = ErrHTTPFLV
 		return
 	}
 
@@ -91,19 +91,19 @@ func (session *SubSession) ReadRequest() (err error) {
 		return
 	}
 	if !strings.HasSuffix(urlObj.Path, ".flv") {
-		err = httpFlvErr
+		err = ErrHTTPFLV
 		return
 	}
 
 	items = strings.Split(urlObj.Path, "/")
 	if len(items) != 3 {
-		err = httpFlvErr
+		err = ErrHTTPFLV
 		return
 	}
 	session.AppName = items[1]
 	items = strings.Split(items[2], ".")
 	if len(items) < 2 {
-		err = httpFlvErr
+		err = ErrHTTPFLV
 		return
 	}
 	session.StreamName = items[0]

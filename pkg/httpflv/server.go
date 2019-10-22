@@ -78,7 +78,7 @@ func (server *Server) handleConnect(conn net.Conn) {
 	log.Infof("-----> http request. [%s] uri=%s", session.UniqueKey, session.URI)
 
 	if !server.obs.NewHTTPFlvSubSessionCB(session) {
-		session.Dispose(httpFlvErr)
+		session.Dispose(ErrHTTPFLV)
 	}
 
 	err := session.RunLoop()

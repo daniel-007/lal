@@ -146,7 +146,7 @@ func (s *ServerSession) doMsg(stream *Stream) error {
 	case TypeidVideo:
 		if s.t != ServerSessionTypePub {
 			log.Errorf("read audio/video message but server session not pub type. [%s]", s.UniqueKey)
-			return rtmpErr
+			return ErrRTMP
 		}
 		//log.Infof("t:%d ts:%d len:%d", stream.header.MsgTypeID, stream.timestampAbs, stream.msg.e - stream.msg.b)
 		s.avObs.ReadRTMPAVMsgCB(stream.header, stream.timestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
@@ -166,7 +166,7 @@ func (s *ServerSession) doACK(stream *Stream) error {
 func (s *ServerSession) doDataMessageAMF0(stream *Stream) error {
 	if s.t != ServerSessionTypePub {
 		log.Errorf("read audio/video message but server session not pub type. [%s]", s.UniqueKey)
-		return rtmpErr
+		return ErrRTMP
 	}
 
 	val, err := stream.msg.peekStringWithType()
@@ -187,7 +187,7 @@ func (s *ServerSession) doDataMessageAMF0(stream *Stream) error {
 			return err
 		}
 		if val != "onMetaData" {
-			return rtmpErr
+			return ErrRTMP
 		}
 	case "onMetaData":
 		// noop
@@ -241,7 +241,7 @@ func (s *ServerSession) doConnect(tid int, stream *Stream) error {
 	var ok bool
 	s.AppName, ok = val["app"].(string)
 	if !ok {
-		return rtmpErr
+		return ErrRTMP
 	}
 	log.Infof("-----> connect('%s'). [%s]", s.AppName, s.UniqueKey)
 

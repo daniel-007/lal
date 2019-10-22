@@ -18,7 +18,7 @@ type Writer interface {
 	WriteTag(tag *Tag)
 }
 
-var httpFlvErr = errors.New("httpflv: fxxk")
+var ErrHTTPFLV = errors.New("lal.httpflv: fxxk")
 
 const (
 	flvHeaderSize    = 13
@@ -42,7 +42,7 @@ func parseHTTPHeader(r LineReader) (n int, firstLine string, headers map[string]
 		return
 	}
 	if len(line) == 0 || isPrefix {
-		err = httpFlvErr
+		err = ErrHTTPFLV
 		return
 	}
 	firstLine = string(line)
@@ -54,7 +54,7 @@ func parseHTTPHeader(r LineReader) (n int, firstLine string, headers map[string]
 			break
 		}
 		if isPrefix {
-			err = httpFlvErr
+			err = ErrHTTPFLV
 			return
 		}
 		if err != nil {
@@ -64,7 +64,7 @@ func parseHTTPHeader(r LineReader) (n int, firstLine string, headers map[string]
 		n += len(l)
 		pos := strings.Index(l, ":")
 		if pos == -1 {
-			err = httpFlvErr
+			err = ErrHTTPFLV
 			return
 		}
 		headers[strings.Trim(l[0:pos], " ")] = strings.Trim(l[pos+1:], " ")

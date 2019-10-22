@@ -29,6 +29,7 @@ type ServerManager struct {
 }
 
 var _ rtmp.ServerObserver = &ServerManager{}
+var _ httpflv.ServerObserver = &ServerManager{}
 
 func NewServerManager(config *Config) *ServerManager {
 	m := &ServerManager{
@@ -92,7 +93,7 @@ func (sm *ServerManager) Dispose() {
 
 	sm.mutex.Lock()
 	for _, group := range sm.groupMap {
-		group.Dispose(lalErr)
+		group.Dispose(ErrLogic)
 	}
 	sm.groupMap = nil
 	sm.mutex.Unlock()
@@ -156,7 +157,7 @@ func (sm *ServerManager) check() {
 	for k, group := range sm.groupMap {
 		if group.IsTotalEmpty() {
 			log.Infof("erase empty group manager. [%s]", group.UniqueKey)
-			group.Dispose(lalErr)
+			group.Dispose(ErrLogic)
 			delete(sm.groupMap, k)
 		}
 	}

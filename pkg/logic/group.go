@@ -111,7 +111,6 @@ func (group *Group) DelRTMPPubSession(session *rtmp.ServerSession) {
 	group.metadataTag = nil
 	group.avcKeySeqHeaderTag = nil
 	group.aacSeqHeaderTag = nil
-
 }
 
 func (group *Group) AddRTMPSubSession(session *rtmp.ServerSession) {

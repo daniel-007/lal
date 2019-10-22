@@ -86,7 +86,7 @@ func (session *PullSession) Connect(rawURL string) error {
 		return err
 	}
 	if url.Scheme != "http" || !strings.HasSuffix(url.Path, ".flv") {
-		return httpFlvErr
+		return ErrHTTPFLV
 	}
 
 	session.host = url.Host
@@ -128,7 +128,7 @@ func (session *PullSession) ReadHTTPRespHeader() (firstLine string, headers map[
 	}
 
 	if !strings.Contains(firstLine, "200") || len(headers) == 0 {
-		err = httpFlvErr
+		err = ErrHTTPFLV
 		return
 	}
 	log.Infof("-----> http response header. [%s]", session.UniqueKey)

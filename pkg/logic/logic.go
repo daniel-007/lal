@@ -10,4 +10,4 @@ package logic
 
 import "errors"
 
-var lalErr = errors.New("lal: fxxk")
+var ErrLogic = errors.New("lal.logic: fxxk")

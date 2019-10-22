@@ -101,7 +101,7 @@ type MockPullSessionObserver struct {
 
 func (pso *MockPullSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
 	tag := logic.Trans.RTMPMsg2FlvTag(header, timestampAbs, message)
-	w.WriteTag(tag)
+	w.WriteTag(*tag)
 	//wg.Done()
 	atomic.AddUint32(&wc, 1)
 }

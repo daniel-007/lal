@@ -17,27 +17,27 @@ import (
 )
 
 type Config struct {
-	RTMP  RTMP       `json:"rtmp"`
-	Log   log.Option `json:"log"`
-	PProf PProf      `json:"pprof"`
+	RTMP    RTMP       `json:"rtmp"`
+	HTTPFlv HTTPFlv    `json:"httpflv"`
+	Log     log.Option `json:"log"`
+	PProf   PProf      `json:"pprof"`
 
 	// v1.0.0之前不提供
-	SubIdleTimeout int64   `json:"sub_idle_timeout"`
-	GOPCacheNum    int     `json:"gop_cache_number"`
-	HTTPFlv        HTTPFlv `json:"httpflv"`
-	Pull           Pull    `json:"pull"`
+	SubIdleTimeout int64 `json:"sub_idle_timeout"`
+	GOPCacheNum    int   `json:"gop_cache_number"`
+	Pull           Pull  `json:"pull"`
 }
 
 type RTMP struct {
 	Addr string `json:"addr"`
 }
 
-type PProf struct {
-	Addr string `json:"addr"`
-}
-
 type HTTPFlv struct {
 	SubListenAddr string `json:"sub_listen_addr"`
+}
+
+type PProf struct {
+	Addr string `json:"addr"`
 }
 
 type Pull struct {
@@ -63,6 +63,7 @@ func LoadConf(confFile string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	// TODO chef: 不需要默认的，因为业务方可能不开 rtmp 监听？
 	if !j.Exist("rtmp.addr") {
 		config.RTMP.Addr = ":1935"
 	}

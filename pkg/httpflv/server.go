@@ -19,6 +19,7 @@ type ServerObserver interface {
 	// 通知上层有新的拉流者
 	// 返回值： true则允许拉流，false则关闭连接
 	NewHTTPFlvSubSessionCB(session *SubSession) bool
+	DelHTTPFlvSubSessionCB(session *SubSession)
 }
 
 type Server struct {
@@ -79,4 +80,8 @@ func (server *Server) handleConnect(conn net.Conn) {
 	if !server.obs.NewHTTPFlvSubSessionCB(session) {
 		session.Dispose(httpFlvErr)
 	}
+
+	err := session.RunLoop()
+	log.Debugf("httpflv sub session loop done. err=%v", err)
+	server.obs.DelHTTPFlvSubSessionCB(session)
 }

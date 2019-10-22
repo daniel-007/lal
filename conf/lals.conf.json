@@ -2,6 +2,9 @@
   "rtmp": {
     "addr": ":19350"
   },
+  "httpflv": {
+    "sub_listen_addr": ":8080"
+  },
   "log": {
     "level": 1,
     "filename": "./logs/lals.log",

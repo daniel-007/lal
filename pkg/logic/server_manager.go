@@ -22,9 +22,10 @@ type ServerManager struct {
 
 	httpFlvServer *httpflv.Server
 	rtmpServer    *rtmp.Server
-	groupMap      map[string]*Group // TODO chef: with appName
-	mutex         sync.Mutex
 	exitChan      chan struct{}
+
+	mutex    sync.Mutex
+	groupMap map[string]*Group // TODO chef: with appName
 }
 
 var _ rtmp.ServerObserver = &ServerManager{}
@@ -101,34 +102,52 @@ func (sm *ServerManager) Dispose() {
 
 // ServerObserver of rtmp.Server
 func (sm *ServerManager) NewRTMPPubSessionCB(session *rtmp.ServerSession) bool {
+	sm.mutex.Lock()
+	defer sm.mutex.Unlock()
 	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
 	return group.AddRTMPPubSession(session)
 }
 
 // ServerObserver of rtmp.Server
+func (sm *ServerManager) DelRTMPPubSessionCB(session *rtmp.ServerSession) {
+	sm.mutex.Lock()
+	defer sm.mutex.Unlock()
+	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
+	group.DelRTMPPubSession(session)
+}
+
+// ServerObserver of rtmp.Server
 func (sm *ServerManager) NewRTMPSubSessionCB(session *rtmp.ServerSession) bool {
+	sm.mutex.Lock()
+	defer sm.mutex.Unlock()
 	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
 	group.AddRTMPSubSession(session)
 	return true
 }
 
 // ServerObserver of rtmp.Server
-func (sm *ServerManager) DelRTMPPubSessionCB(session *rtmp.ServerSession) {
-	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
-	group.DelRTMPPubSession(session)
-}
-
-// ServerObserver of rtmp.Server
 func (sm *ServerManager) DelRTMPSubSessionCB(session *rtmp.ServerSession) {
+	sm.mutex.Lock()
+	defer sm.mutex.Unlock()
 	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
 	group.DelRTMPSubSession(session)
 }
 
 // ServerObserver of httpflv.Server
 func (sm *ServerManager) NewHTTPFlvSubSessionCB(session *httpflv.SubSession) bool {
+	sm.mutex.Lock()
+	defer sm.mutex.Unlock()
 	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
 	group.AddHTTPFlvSubSession(session)
 	return true
+}
+
+// ServerObserver of httpflv.Server
+func (sm *ServerManager) DelHTTPFlvSubSessionCB(session *httpflv.SubSession) {
+	sm.mutex.Lock()
+	defer sm.mutex.Unlock()
+	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
+	group.DelHTTPFlvSubSession(session)
 }
 
 func (sm *ServerManager) check() {
@@ -144,8 +163,6 @@ func (sm *ServerManager) check() {
 }
 
 func (sm *ServerManager) getOrCreateGroup(appName string, streamName string) *Group {
-	sm.mutex.Lock()
-	defer sm.mutex.Unlock()
 	group, exist := sm.groupMap[streamName]
 	if !exist {
 		group = NewGroup(appName, streamName)

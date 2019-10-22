@@ -41,7 +41,8 @@ type SubSession struct {
 	URI        string
 	Headers    map[string]string
 
-	HasKeyFrame bool
+	IsFresh     bool
+	WaitKeyNalu bool
 
 	conn connection.Connection
 }
@@ -50,7 +51,9 @@ func NewSubSession(conn net.Conn, writeTimeout int64) *SubSession {
 	uk := unique.GenUniqueKey("FLVSUB")
 	log.Infof("lifecycle new SubSession. [%s] remoteAddr=%s", uk, conn.RemoteAddr().String())
 	return &SubSession{
-		UniqueKey: uk,
+		UniqueKey:   uk,
+		IsFresh:     true,
+		WaitKeyNalu: true,
 		conn: connection.New(conn, func(option *connection.Option) {
 			option.ReadBufSize = readBufSize
 			option.WriteChanSize = wChanSize

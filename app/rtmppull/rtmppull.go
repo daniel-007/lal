@@ -25,7 +25,7 @@ type Obs struct {
 func (obs *Obs) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
 	log.Infof("%+v, abs ts=%d", header, timestampAbs)
 	tag := logic.Trans.RTMPMsg2FlvTag(header, timestampAbs, message)
-	err := obs.w.WriteTag(tag)
+	err := obs.w.WriteTag(*tag)
 	log.FatalIfErrorNotNil(err)
 }
 

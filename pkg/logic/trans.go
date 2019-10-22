@@ -37,11 +37,11 @@ func (t trans) FlvTag2RTMPMsg(tag httpflv.Tag) (header rtmp.Header, timestampAbs
 	return
 }
 
-func (t trans) RTMPMsg2FlvTag(header rtmp.Header, timestampAbs uint32, message []byte) httpflv.Tag {
+func (t trans) RTMPMsg2FlvTag(header rtmp.Header, timestampAbs uint32, message []byte) *httpflv.Tag {
 	var tag httpflv.Tag
 	tag.Header.T = header.MsgTypeID
 	tag.Header.DataSize = header.MsgLen
 	tag.Header.Timestamp = timestampAbs
 	tag.Raw = httpflv.PackHTTPFlvTag(header.MsgTypeID, timestampAbs, message)
-	return tag
+	return &tag
 }

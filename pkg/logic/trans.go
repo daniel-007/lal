@@ -18,11 +18,11 @@ var Trans trans
 type trans struct {
 }
 
-//// TODO chef: rtmp msg 也弄成结构体
+// 注意，tag -> message [nocopy]
 func (t trans) FlvTag2RTMPMsg(tag httpflv.Tag) (header rtmp.Header, timestampAbs uint32, message []byte) {
 	header.MsgLen = tag.Header.DataSize
 	header.MsgTypeID = tag.Header.T
-	header.MsgStreamID = rtmp.MSID1 // TODO
+	header.MsgStreamID = rtmp.MSID1
 	switch tag.Header.T {
 	case httpflv.TagTypeMetadata:
 		header.CSID = rtmp.CSIDAMF
@@ -37,6 +37,7 @@ func (t trans) FlvTag2RTMPMsg(tag httpflv.Tag) (header rtmp.Header, timestampAbs
 	return
 }
 
+// 注意，message -> tag [copy]
 func (t trans) RTMPMsg2FlvTag(header rtmp.Header, timestampAbs uint32, message []byte) *httpflv.Tag {
 	var tag httpflv.Tag
 	tag.Header.T = header.MsgTypeID

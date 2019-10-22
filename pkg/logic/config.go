@@ -21,11 +21,6 @@ type Config struct {
 	HTTPFlv HTTPFlv    `json:"httpflv"`
 	Log     log.Option `json:"log"`
 	PProf   PProf      `json:"pprof"`
-
-	// v1.0.0之前不提供
-	SubIdleTimeout int64 `json:"sub_idle_timeout"`
-	GOPCacheNum    int   `json:"gop_cache_number"`
-	Pull           Pull  `json:"pull"`
 }
 
 type RTMP struct {
@@ -40,14 +35,6 @@ type PProf struct {
 	Addr string `json:"addr"`
 }
 
-type Pull struct {
-	Type                      string `json:"type"`
-	Addr                      string `json:"addr"`
-	ConnectTimeout            int64  `json:"connect_timeout"`
-	ReadTimeout               int64  `json:"read_timeout"`
-	StopPullWhileNoSubTimeout int64  `json:"stop_pull_while_no_sub_timeout"`
-}
-
 func LoadConf(confFile string) (*Config, error) {
 	var config Config
 	rawContent, err := ioutil.ReadFile(confFile)
@@ -58,15 +45,11 @@ func LoadConf(confFile string) (*Config, error) {
 		return nil, err
 	}
 
-	// TODO chef: check item valid.
 	j, err := nazajson.New(rawContent)
 	if err != nil {
 		return nil, err
 	}
-	// TODO chef: 不需要默认的，因为业务方可能不开 rtmp 监听？
-	if !j.Exist("rtmp.addr") {
-		config.RTMP.Addr = ":1935"
-	}
+
 	if !j.Exist("log.level") {
 		config.Log.Level = log.LevelDebug
 	}

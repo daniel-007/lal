@@ -28,9 +28,6 @@ type ServerManager struct {
 	groupMap map[string]*Group // TODO chef: with appName
 }
 
-var _ rtmp.ServerObserver = &ServerManager{}
-var _ httpflv.ServerObserver = &ServerManager{}
-
 func NewServerManager(config *Config) *ServerManager {
 	m := &ServerManager{
 		config:   config,
@@ -38,7 +35,7 @@ func NewServerManager(config *Config) *ServerManager {
 		exitChan: make(chan struct{}),
 	}
 	if len(config.HTTPFlv.SubListenAddr) != 0 {
-		m.httpFlvServer = httpflv.NewServer(m, config.HTTPFlv.SubListenAddr, config.SubIdleTimeout)
+		m.httpFlvServer = httpflv.NewServer(m, config.HTTPFlv.SubListenAddr)
 	}
 	if len(config.RTMP.Addr) != 0 {
 		m.rtmpServer = rtmp.NewServer(m, config.RTMP.Addr)

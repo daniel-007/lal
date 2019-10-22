@@ -47,7 +47,7 @@ type SubSession struct {
 	conn connection.Connection
 }
 
-func NewSubSession(conn net.Conn, writeTimeout int64) *SubSession {
+func NewSubSession(conn net.Conn) *SubSession {
 	uk := unique.GenUniqueKey("FLVSUB")
 	log.Infof("lifecycle new SubSession. [%s] remoteAddr=%s", uk, conn.RemoteAddr().String())
 	return &SubSession{
@@ -57,7 +57,7 @@ func NewSubSession(conn net.Conn, writeTimeout int64) *SubSession {
 		conn: connection.New(conn, func(option *connection.Option) {
 			option.ReadBufSize = readBufSize
 			option.WriteChanSize = wChanSize
-			option.WriteTimeoutMS = int(writeTimeout)
+			option.WriteTimeoutMS = subSessionWriteTimeoutMS
 		}),
 	}
 }

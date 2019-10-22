@@ -23,19 +23,17 @@ type ServerObserver interface {
 }
 
 type Server struct {
-	obs             ServerObserver
-	addr            string
-	subWriteTimeout int64
+	obs  ServerObserver
+	addr string
 
 	m  sync.Mutex
 	ln net.Listener
 }
 
-func NewServer(obs ServerObserver, addr string, subWriteTimeout int64) *Server {
+func NewServer(obs ServerObserver, addr string) *Server {
 	return &Server{
-		obs:             obs,
-		addr:            addr,
-		subWriteTimeout: subWriteTimeout,
+		obs:  obs,
+		addr: addr,
 	}
 }
 
@@ -70,7 +68,7 @@ func (server *Server) Dispose() {
 
 func (server *Server) handleConnect(conn net.Conn) {
 	log.Infof("accept a http flv connection. remoteAddr=%v", conn.RemoteAddr())
-	session := NewSubSession(conn, server.subWriteTimeout)
+	session := NewSubSession(conn)
 	if err := session.ReadRequest(); err != nil {
 		log.Errorf("read SubSession request error. [%s]", session.UniqueKey)
 		return

@@ -31,8 +31,7 @@ type Group struct {
 	pullSession          *rtmp.PullSession
 	rtmpSubSessionSet    map[*rtmp.ServerSession]struct{}
 	httpflvSubSessionSet map[*httpflv.SubSession]struct{}
-	// TODO chef:
-	// 已打成rtmp chunk格式
+	// rtmp chunk格式
 	metadata        []byte
 	avcKeySeqHeader []byte
 	aacSeqHeader    []byte
@@ -313,64 +312,4 @@ func (group *Group) broadcastRTMP2FLV(header rtmp.Header, timestampAbs uint32, m
 
 		}
 	}
-}
-
-func (group *Group) Pull(addr string, connectTimeout int64) {
-	// TODO chef: config me,
-	// v1.0.0 版本之前先不提供去其他节点回源的功能
-	panic("not impl yet")
-	//group.pullSession = NewPullSession(group, PullSessionTimeout{
-	//	ConnectTimeoutMS: int(connectTimeout),
-	//})
-	//
-	//defer func() {
-	//	group.mutex.Lock()
-	//	defer group.mutex.Unlock()
-	//	log.Infof("del rtmp PullSession out of group. [%s] [%s]", group.UniqueKey, group.pullSession)
-	//	group.pullSession = nil
-	//}()
-	//
-	//url := fmt.Sprintf("rtmp://%s/%s/%s", addr, group.appName, group.streamName)
-	//if err := group.pullSession.Pull(url); err != nil {
-	//	log.Error(err)
-	//}
-	//if err := group.pullSession.WaitLoop(); err != nil {
-	//	log.Debugf("rtmp PullSession loop done. [%s] [%s] err=%v", group.UniqueKey, group.pullSession.UniqueKey, err)
-	//	return
-	//}
-}
-
-func (group *Group) pullIfNeeded() {
-	panic("not impl")
-	//if !gm.isInExist() {
-	//	switch gm.config.Pull.Type {
-	//	case "httpflv":
-	//		go gm.httpFlvGroup.Pull(gm.config.Pull.Addr, gm.config.Pull.ConnectTimeout, gm.config.Pull.ReadTimeout)
-	//	case "rtmp":
-	//		go gm.rtmpGroup.Pull(gm.config.Pull.Addr, gm.config.Pull.ConnectTimeout)
-	//	}
-	//}
-}
-
-func (group *Group) isInExist() bool {
-	panic("not impl")
-	//return (gm.rtmpGroup != nil && gm.rtmpGroup.IsInExist()) ||
-	//	(gm.httpFlvGroup != nil && gm.httpFlvGroup.IsInExist())
-}
-
-// GroupObserver of httpflv.Group
-func (group *Group) ReadHTTPRespHeaderCB() {
-	// noop
-}
-
-// GroupObserver of httpflv.Group
-func (group *Group) ReadFlvHeaderCB(flvHeader []byte) {
-	// noop
-}
-
-// GroupObserver of httpflv.Group
-func (group *Group) ReadFlvTagCB(tag *httpflv.Tag) {
-	log.Info("ReadFlvTagCB")
-
-	// TODO chef: broadcast to rtmp.Group
 }

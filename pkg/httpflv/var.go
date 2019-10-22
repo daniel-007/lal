@@ -8,5 +8,6 @@
 
 package httpflv
 
-var readBufSize = 16384 // ClientPullSession 和 ServerSubSession 读取数据时
-var wChanSize = 1024
+var readBufSize = 16384 // ClientPullSession 和 SubSession 读取数据时
+var wChanSize = 1024    // SubSession 发送数据时 channel 的大小
+var subSessionWriteTimeoutMS = 10000

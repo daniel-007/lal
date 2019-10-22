@@ -18,8 +18,8 @@ import (
 type ServerObserver interface {
 	// 通知上层有新的拉流者
 	// 返回值： true则允许拉流，false则关闭连接
-	NewHTTPFlvSubSessionCB(session *SubSession) bool
-	DelHTTPFlvSubSessionCB(session *SubSession)
+	NewHTTPFLVSubSessionCB(session *SubSession) bool
+	DelHTTPFLVSubSessionCB(session *SubSession)
 }
 
 type Server struct {
@@ -75,11 +75,11 @@ func (server *Server) handleConnect(conn net.Conn) {
 	}
 	log.Infof("-----> http request. [%s] uri=%s", session.UniqueKey, session.URI)
 
-	if !server.obs.NewHTTPFlvSubSessionCB(session) {
+	if !server.obs.NewHTTPFLVSubSessionCB(session) {
 		session.Dispose(ErrHTTPFLV)
 	}
 
 	err := session.RunLoop()
 	log.Debugf("httpflv sub session loop done. err=%v", err)
-	server.obs.DelHTTPFlvSubSessionCB(session)
+	server.obs.DelHTTPFLVSubSessionCB(session)
 }

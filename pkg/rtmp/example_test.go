@@ -29,16 +29,16 @@ var (
 	serverAddr = ":10001"
 	pushURL    = "rtmp://127.0.0.1:10001/live/test"
 	pullURL    = "rtmp://127.0.0.1:10001/live/test"
-	rFlvFile   = "testdata/test.flv"
-	wFlvFile   = "testdata/out.flv"
-	wgNum      = 4 // FlvFileReader -> [push -> pub -> sub -> pull] -> FlvFileWriter
+	rFLVFile   = "testdata/test.flv"
+	wFLVFile   = "testdata/out.flv"
+	wgNum      = 4 // FLVFileReader -> [push -> pub -> sub -> pull] -> FLVFileWriter
 )
 
 var (
 	pubSessionObs MockPubSessionObserver
 	subSession    *rtmp.ServerSession
 	wg            sync.WaitGroup
-	w             httpflv.FlvFileWriter
+	w             httpflv.FLVFileWriter
 	//
 	rc uint32
 	bc uint32
@@ -100,7 +100,7 @@ type MockPullSessionObserver struct {
 }
 
 func (pso *MockPullSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
-	tag := logic.Trans.RTMPMsg2FlvTag(header, timestampAbs, message)
+	tag := logic.Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
 	w.WriteTag(*tag)
 	//wg.Done()
 	atomic.AddUint32(&wc, 1)
@@ -109,8 +109,8 @@ func (pso *MockPullSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestam
 func TestExample(t *testing.T) {
 	var err error
 
-	var r httpflv.FlvFileReader
-	err = r.Open(rFlvFile)
+	var r httpflv.FLVFileReader
+	err = r.Open(rFLVFile)
 	//assert.Equal(t, nil, err)
 	// 测试文件不存在，则不做后面的测试了
 	if err != nil {
@@ -137,12 +137,12 @@ func TestExample(t *testing.T) {
 	err = pushSession.Push(pushURL)
 	assert.Equal(t, nil, err)
 
-	err = w.Open(wFlvFile)
+	err = w.Open(wFLVFile)
 	assert.Equal(t, nil, err)
-	err = w.WriteRaw(httpflv.FlvHeader)
+	err = w.WriteRaw(httpflv.FLVHeader)
 	assert.Equal(t, nil, err)
 
-	_, err = r.ReadFlvHeader()
+	_, err = r.ReadFLVHeader()
 	assert.Equal(t, nil, err)
 	for {
 		tag, err := r.ReadTag()
@@ -152,7 +152,7 @@ func TestExample(t *testing.T) {
 		assert.Equal(t, nil, err)
 		rc++
 		//wg.Add(1)
-		h, _, m := logic.Trans.FlvTag2RTMPMsg(*tag)
+		h, _, m := logic.Trans.FLVTag2RTMPMsg(*tag)
 		chunks := rtmp.Message2Chunks(m, &h)
 		err = pushSession.AsyncWrite(chunks)
 		assert.Equal(t, nil, err)
@@ -187,12 +187,12 @@ func TestExample(t *testing.T) {
 }
 
 func compareFile(t *testing.T) {
-	r, err := ioutil.ReadFile(rFlvFile)
+	r, err := ioutil.ReadFile(rFLVFile)
 	assert.Equal(t, nil, err)
-	w, err := ioutil.ReadFile(wFlvFile)
+	w, err := ioutil.ReadFile(wFLVFile)
 	assert.Equal(t, nil, err)
 	res := bytes.Compare(r, w)
 	assert.Equal(t, 0, res)
-	err = os.Remove(wFlvFile)
+	err = os.Remove(wFLVFile)
 	assert.Equal(t, nil, err)
 }

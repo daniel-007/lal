@@ -129,18 +129,18 @@ func (group *Group) DelRTMPSubSession(session *rtmp.ServerSession) {
 	delete(group.rtmpSubSessionSet, session)
 }
 
-func (group *Group) AddHTTPFlvSubSession(session *httpflv.SubSession) {
+func (group *Group) AddHTTPFLVSubSession(session *httpflv.SubSession) {
 	log.Debugf("add httpflv SubSession into group. [%s] [%s]", group.UniqueKey, session.UniqueKey)
 	session.WriteHTTPResponseHeader()
-	session.WriteFlvHeader()
+	session.WriteFLVHeader()
 
 	group.mutex.Lock()
 	defer group.mutex.Unlock()
 	group.httpflvSubSessionSet[session] = struct{}{}
-	log.Debugf("< AddHTTPFlvSubSession. [%s] [%s] %d", group.UniqueKey, session.UniqueKey, len(group.httpflvSubSessionSet))
+	log.Debugf("< AddHTTPFLVSubSession. [%s] [%s] %d", group.UniqueKey, session.UniqueKey, len(group.httpflvSubSessionSet))
 }
 
-func (group *Group) DelHTTPFlvSubSession(session *httpflv.SubSession) {
+func (group *Group) DelHTTPFLVSubSession(session *httpflv.SubSession) {
 	log.Debugf("del httpflv SubSession from group. [%s] [%s]", group.UniqueKey, session.UniqueKey)
 	group.mutex.Lock()
 	defer group.mutex.Unlock()
@@ -245,7 +245,7 @@ func (group *Group) broadcastRTMP2RTMP(header rtmp.Header, timestampAbs uint32, 
 		}
 		log.Debugf("cache metadata. [%s]", group.UniqueKey)
 		group.metadata = absChunks
-		group.metadataTag = Trans.RTMPMsg2FlvTag(header, timestampAbs, message)
+		group.metadataTag = Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
 	case rtmp.TypeidVideo:
 		// TODO chef: magic number
 		if message[0] == 0x17 && message[1] == 0x0 {
@@ -254,7 +254,7 @@ func (group *Group) broadcastRTMP2RTMP(header rtmp.Header, timestampAbs uint32, 
 			}
 			log.Debugf("cache avc key seq header. [%s]", group.UniqueKey)
 			group.avcKeySeqHeader = absChunks
-			group.avcKeySeqHeaderTag = Trans.RTMPMsg2FlvTag(header, timestampAbs, message)
+			group.avcKeySeqHeaderTag = Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
 		}
 	case rtmp.TypeidAudio:
 		if (message[0]>>4) == 0x0a && message[1] == 0x0 {
@@ -263,7 +263,7 @@ func (group *Group) broadcastRTMP2RTMP(header rtmp.Header, timestampAbs uint32, 
 			}
 			log.Debugf("cache aac seq header. [%s]", group.UniqueKey)
 			group.aacSeqHeader = absChunks
-			group.aacSeqHeaderTag = Trans.RTMPMsg2FlvTag(header, timestampAbs, message)
+			group.aacSeqHeaderTag = Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
 		}
 	}
 }
@@ -273,7 +273,7 @@ func (group *Group) broadcastRTMP2FLV(header rtmp.Header, timestampAbs uint32, m
 	for session := range group.httpflvSubSessionSet {
 		// ## 1.1. 将当前 message 转换成 tag 格式
 		if currTag == nil {
-			currTag = Trans.RTMPMsg2FlvTag(header, timestampAbs, message)
+			currTag = Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
 		}
 
 		// ## 2.2. 如果是新的sub session，发送已缓存的信息

@@ -19,7 +19,7 @@ type trans struct {
 }
 
 // 注意，tag -> message [nocopy]
-func (t trans) FlvTag2RTMPMsg(tag httpflv.Tag) (header rtmp.Header, timestampAbs uint32, message []byte) {
+func (t trans) FLVTag2RTMPMsg(tag httpflv.Tag) (header rtmp.Header, timestampAbs uint32, message []byte) {
 	header.MsgLen = tag.Header.DataSize
 	header.MsgTypeID = tag.Header.T
 	header.MsgStreamID = rtmp.MSID1
@@ -38,11 +38,11 @@ func (t trans) FlvTag2RTMPMsg(tag httpflv.Tag) (header rtmp.Header, timestampAbs
 }
 
 // 注意，message -> tag [copy]
-func (t trans) RTMPMsg2FlvTag(header rtmp.Header, timestampAbs uint32, message []byte) *httpflv.Tag {
+func (t trans) RTMPMsg2FLVTag(header rtmp.Header, timestampAbs uint32, message []byte) *httpflv.Tag {
 	var tag httpflv.Tag
 	tag.Header.T = header.MsgTypeID
 	tag.Header.DataSize = header.MsgLen
 	tag.Header.Timestamp = timestampAbs
-	tag.Raw = httpflv.PackHTTPFlvTag(header.MsgTypeID, timestampAbs, message)
+	tag.Raw = httpflv.PackHTTPFLVTag(header.MsgTypeID, timestampAbs, message)
 	return &tag
 }

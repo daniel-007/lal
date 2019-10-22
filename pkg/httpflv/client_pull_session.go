@@ -38,7 +38,7 @@ type PullSession struct {
 	uri  string
 	addr string
 
-	readFlvTagCB ReadFlvTagCB
+	readFLVTagCB ReadFLVTagCB
 }
 
 func NewPullSession(config PullSessionConfig) *PullSession {
@@ -50,7 +50,7 @@ func NewPullSession(config PullSessionConfig) *PullSession {
 	}
 }
 
-type ReadFlvTagCB func(tag *Tag)
+type ReadFLVTagCB func(tag *Tag)
 
 // 阻塞直到拉流失败
 //
@@ -58,8 +58,8 @@ type ReadFlvTagCB func(tag *Tag)
 // http://{domain}/{app_name}/{stream_name}.flv
 // http://{ip}/{domain}/{app_name}/{stream_name}.flv
 //
-// @param readFlvTagCB 读取到 flv tag 数据时回调。回调结束后，PullSession不会再使用 <tag> 数据。
-func (session *PullSession) Pull(rawURL string, readFlvTagCB ReadFlvTagCB) error {
+// @param readFLVTagCB 读取到 flv tag 数据时回调。回调结束后，PullSession不会再使用 <tag> 数据。
+func (session *PullSession) Pull(rawURL string, readFLVTagCB ReadFLVTagCB) error {
 	if err := session.Connect(rawURL); err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (session *PullSession) Pull(rawURL string, readFlvTagCB ReadFlvTagCB) error
 		return err
 	}
 
-	return session.runReadLoop(readFlvTagCB)
+	return session.runReadLoop(readFLVTagCB)
 }
 
 func (session *PullSession) Dispose(err error) {
@@ -136,7 +136,7 @@ func (session *PullSession) ReadHTTPRespHeader() (firstLine string, headers map[
 	return
 }
 
-func (session *PullSession) ReadFlvHeader() ([]byte, error) {
+func (session *PullSession) ReadFLVHeader() ([]byte, error) {
 	flvHeader := make([]byte, flvHeaderSize)
 	_, err := session.Conn.ReadAtLeast(flvHeader, flvHeaderSize)
 	if err != nil {
@@ -152,12 +152,12 @@ func (session *PullSession) ReadTag() (*Tag, error) {
 	return readTag(session.Conn)
 }
 
-func (session *PullSession) runReadLoop(readFlvTagCB ReadFlvTagCB) error {
+func (session *PullSession) runReadLoop(readFLVTagCB ReadFLVTagCB) error {
 	if _, _, err := session.ReadHTTPRespHeader(); err != nil {
 		return err
 	}
 
-	if _, err := session.ReadFlvHeader(); err != nil {
+	if _, err := session.ReadFLVHeader(); err != nil {
 		return err
 	}
 
@@ -166,6 +166,6 @@ func (session *PullSession) runReadLoop(readFlvTagCB ReadFlvTagCB) error {
 		if err != nil {
 			return err
 		}
-		readFlvTagCB(tag)
+		readFLVTagCB(tag)
 	}
 }

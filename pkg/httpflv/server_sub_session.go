@@ -122,7 +122,7 @@ func (session *SubSession) WriteHTTPResponseHeader() {
 	session.WriteRawPacket(flvHTTPResponseHeader)
 }
 
-func (session *SubSession) WriteFlvHeader() {
+func (session *SubSession) WriteFLVHeader() {
 	log.Infof("<----- http flv header. [%s]", session.UniqueKey)
 	session.WriteRawPacket(flvHeaderBuf13)
 }

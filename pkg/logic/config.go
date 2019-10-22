@@ -18,7 +18,7 @@ import (
 
 type Config struct {
 	RTMP    RTMP       `json:"rtmp"`
-	HTTPFlv HTTPFlv    `json:"httpflv"`
+	HTTPFLV HTTPFLV    `json:"httpflv"`
 	Log     log.Option `json:"log"`
 	PProf   PProf      `json:"pprof"`
 }
@@ -27,7 +27,7 @@ type RTMP struct {
 	Addr string `json:"addr"`
 }
 
-type HTTPFlv struct {
+type HTTPFLV struct {
 	SubListenAddr string `json:"sub_listen_addr"`
 }
 

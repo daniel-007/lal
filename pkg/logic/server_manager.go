@@ -20,7 +20,7 @@ import (
 type ServerManager struct {
 	config *Config
 
-	httpFlvServer *httpflv.Server
+	httpflvServer *httpflv.Server
 	rtmpServer    *rtmp.Server
 	exitChan      chan struct{}
 
@@ -34,8 +34,8 @@ func NewServerManager(config *Config) *ServerManager {
 		groupMap: make(map[string]*Group),
 		exitChan: make(chan struct{}),
 	}
-	if len(config.HTTPFlv.SubListenAddr) != 0 {
-		m.httpFlvServer = httpflv.NewServer(m, config.HTTPFlv.SubListenAddr)
+	if len(config.HTTPFLV.SubListenAddr) != 0 {
+		m.httpflvServer = httpflv.NewServer(m, config.HTTPFLV.SubListenAddr)
 	}
 	if len(config.RTMP.Addr) != 0 {
 		m.rtmpServer = rtmp.NewServer(m, config.RTMP.Addr)
@@ -44,9 +44,9 @@ func NewServerManager(config *Config) *ServerManager {
 }
 
 func (sm *ServerManager) RunLoop() {
-	if sm.httpFlvServer != nil {
+	if sm.httpflvServer != nil {
 		go func() {
-			if err := sm.httpFlvServer.RunLoop(); err != nil {
+			if err := sm.httpflvServer.RunLoop(); err != nil {
 				log.Error(err)
 			}
 		}()
@@ -81,8 +81,8 @@ func (sm *ServerManager) RunLoop() {
 
 func (sm *ServerManager) Dispose() {
 	log.Debug("dispose server manager.")
-	if sm.httpFlvServer != nil {
-		sm.httpFlvServer.Dispose()
+	if sm.httpflvServer != nil {
+		sm.httpflvServer.Dispose()
 	}
 	if sm.rtmpServer != nil {
 		sm.rtmpServer.Dispose()
@@ -132,20 +132,20 @@ func (sm *ServerManager) DelRTMPSubSessionCB(session *rtmp.ServerSession) {
 }
 
 // ServerObserver of httpflv.Server
-func (sm *ServerManager) NewHTTPFlvSubSessionCB(session *httpflv.SubSession) bool {
+func (sm *ServerManager) NewHTTPFLVSubSessionCB(session *httpflv.SubSession) bool {
 	sm.mutex.Lock()
 	defer sm.mutex.Unlock()
 	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
-	group.AddHTTPFlvSubSession(session)
+	group.AddHTTPFLVSubSession(session)
 	return true
 }
 
 // ServerObserver of httpflv.Server
-func (sm *ServerManager) DelHTTPFlvSubSessionCB(session *httpflv.SubSession) {
+func (sm *ServerManager) DelHTTPFLVSubSessionCB(session *httpflv.SubSession) {
 	sm.mutex.Lock()
 	defer sm.mutex.Unlock()
 	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
-	group.DelHTTPFlvSubSession(session)
+	group.DelHTTPFLVSubSession(session)
 }
 
 func (sm *ServerManager) check() {

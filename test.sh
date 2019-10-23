@@ -34,13 +34,26 @@ done
 
 # 跑 go test 生成测试覆盖率
 echo "-----CI coverage-----"
-if [ ! -f "pkg/rtmp/testdata/test.flv" ]; then
-    echo "CHEFERASEME test.flv not exist."
-    if [ ! -d "pkg/rtmp/testdata" ]; then
-        echo "CHEFERASEME mkdir."
-        mkdir "pkg/rtmp/testdata"
+if [ ! -f "./testdata/test.flv" ]; then
+    if [ ! -d "./testdata" ]; then
+        mkdir "./testdata"
     fi
-    wget https://pengrl.com/images/other/source.200kbps.768x320.flv -O pkg/rtmp/testdata/test.flv
+    wget https://pengrl.com/images/other/source.200kbps.768x320.flv -O ./testdata/test.flv
+fi
+if [ ! -f "./pkg/rtmp/testdata/test.flv" ]; then
+    if [ ! -d "./pkg/rtmp/testdata" ]; then
+        mkdir "./pkg/rtmp/testdata"
+    fi
+    cp ./testdata/test.flv ./pkg/rtmp/testdata/test.flv
+fi
+if [ ! -f "./pkg/logic/testdata/test.flv" ]; then
+    if [ ! -d "./pkg/logic/testdata" ]; then
+        mkdir "./pkg/logic/testdata"
+    fi
+    cp ./testdata/test.flv ./pkg/logic/testdata/test.flv
+fi
+if [ ! -f "./pkg/logic/testdata/lals.default.conf.json" ]; then
+    cp ./conf/lals.default.conf.json ./pkg/logic/testdata/lals.default.conf.json
 fi
 
 echo "" > coverage.txt

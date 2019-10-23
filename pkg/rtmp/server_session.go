@@ -294,10 +294,6 @@ func (s *ServerSession) doPublish(tid int, stream *Stream) (err error) {
 	log.Debugf("[%s] pubType=%s", s.UniqueKey, pubType)
 	log.Infof("-----> publish('%s') [%s]", s.StreamName, s.UniqueKey)
 
-	// 回调放在回复客户端信令之前
-	s.t = ServerSessionTypePub
-	s.obs.NewRTMPPubSessionCB(s)
-
 	log.Infof("<---- onStatus('NetStream.Publish.Start'). [%s]", s.UniqueKey)
 	if err := s.packer.writeOnStatusPublish(s.conn, MSID1); err != nil {
 		return err
@@ -305,6 +301,9 @@ func (s *ServerSession) doPublish(tid int, stream *Stream) (err error) {
 
 	// 回复完信令后修改 connection 的属性
 	s.ModConnProps()
+
+	s.t = ServerSessionTypePub
+	s.obs.NewRTMPPubSessionCB(s)
 
 	return nil
 }
@@ -323,10 +322,6 @@ func (s *ServerSession) doPlay(tid int, stream *Stream) (err error) {
 	log.Infof("-----> play('%s'). [%s]", s.StreamName, s.UniqueKey)
 	// TODO chef: start duration reset
 
-	// 回调放在回复客户端信令之前
-	s.t = ServerSessionTypeSub
-	s.obs.NewRTMPSubSessionCB(s)
-
 	log.Infof("<----onStatus('NetStream.Play.Start'). [%s]", s.UniqueKey)
 	if err := s.packer.writeOnStatusPlay(s.conn, MSID1); err != nil {
 		return err
@@ -335,12 +330,16 @@ func (s *ServerSession) doPlay(tid int, stream *Stream) (err error) {
 	// 回复完信令后修改 connection 的属性
 	s.ModConnProps()
 
+	s.t = ServerSessionTypeSub
+	s.obs.NewRTMPSubSessionCB(s)
+
 	return nil
 }
 
 func (s *ServerSession) ModConnProps() {
 	s.conn.ModWriteChanSize(wChanSize)
-	s.conn.ModWriteBufSize(writeBufSize)
+	// TODO chef: naza.connection 这种方式会导致最后一点数据发送不出去，我们应该使用更好的方式
+	//s.conn.ModWriteBufSize(writeBufSize)
 
 	switch s.t {
 	case ServerSessionTypePub:

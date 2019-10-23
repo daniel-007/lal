@@ -13,7 +13,6 @@ import (
 	"net"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/q191201771/naza/pkg/connection"
@@ -31,8 +30,7 @@ type PullSession struct {
 
 	config PullSessionConfig
 
-	Conn      connection.Connection
-	closeOnce sync.Once
+	Conn connection.Connection
 
 	host string
 	uri  string
@@ -71,12 +69,8 @@ func (session *PullSession) Pull(rawURL string, readFLVTagCB ReadFLVTagCB) error
 }
 
 func (session *PullSession) Dispose(err error) {
-	session.closeOnce.Do(func() {
-		log.Infof("lifecycle dispose PullSession. [%s] reason=%v", session.UniqueKey, err)
-		if err := session.Conn.Close(); err != nil {
-			log.Errorf("conn close error. [%s] err=%v", session.UniqueKey, err)
-		}
-	})
+	log.Infof("lifecycle dispose PullSession. [%s] reason=%v", session.UniqueKey, err)
+	_ = session.Conn.Close()
 }
 
 func (session *PullSession) Connect(rawURL string) error {

@@ -68,7 +68,7 @@ func (session *SubSession) ReadRequest() (err error) {
 
 	defer func() {
 		if err != nil {
-			session.Dispose(err)
+			session.Dispose()
 		}
 	}()
 
@@ -135,6 +135,6 @@ func (session *SubSession) WriteRawPacket(pkt []byte) {
 	_, _ = session.conn.Write(pkt)
 }
 
-func (session *SubSession) Dispose(err error) {
+func (session *SubSession) Dispose() {
 	_ = session.conn.Close()
 }

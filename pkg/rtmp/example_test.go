@@ -83,13 +83,10 @@ func (pso *MockPubSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestamp
 	switch header.MsgTypeID {
 	case rtmp.TypeidDataMessageAMF0:
 		currHeader.CSID = rtmp.CSIDAMF
-		//prevHeader = nil
 	case rtmp.TypeidAudio:
 		currHeader.CSID = rtmp.CSIDAudio
-		//prevHeader = group.prevAudioHeader
 	case rtmp.TypeidVideo:
 		currHeader.CSID = rtmp.CSIDVideo
-		//prevHeader = group.prevVideoHeader
 	}
 	var absChunks []byte
 	absChunks = rtmp.Message2Chunks(message, &currHeader)
@@ -102,7 +99,6 @@ type MockPullSessionObserver struct {
 func (pso *MockPullSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
 	tag := logic.Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
 	w.WriteTag(*tag)
-	//wg.Done()
 	atomic.AddUint32(&wc, 1)
 }
 
@@ -111,8 +107,6 @@ func TestExample(t *testing.T) {
 
 	var r httpflv.FLVFileReader
 	err = r.Open(rFLVFile)
-	//assert.Equal(t, nil, err)
-	// 测试文件不存在，则不做后面的测试了
 	if err != nil {
 		return
 	}
@@ -151,13 +145,11 @@ func TestExample(t *testing.T) {
 		}
 		assert.Equal(t, nil, err)
 		rc++
-		//wg.Add(1)
 		h, _, m := logic.Trans.FLVTag2RTMPMsg(*tag)
 		chunks := rtmp.Message2Chunks(m, &h)
 		err = pushSession.AsyncWrite(chunks)
 		assert.Equal(t, nil, err)
 	}
-	//wg.Wait()
 
 	r.Dispose()
 	wg.Done()

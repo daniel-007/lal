@@ -50,6 +50,10 @@ func LoadConf(confFile string) (*Config, error) {
 		return nil, err
 	}
 
+	// 检查配置必须项
+	// 暂时无
+
+	// 配置不存在时，设置默认值
 	if !j.Exist("log.level") {
 		config.Log.Level = log.LevelDebug
 	}

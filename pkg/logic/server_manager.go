@@ -92,7 +92,6 @@ func (sm *ServerManager) Dispose() {
 	for _, group := range sm.groupMap {
 		group.Dispose(ErrLogic)
 	}
-	sm.groupMap = nil
 	sm.mutex.Unlock()
 
 	sm.exitChan <- struct{}{}
@@ -110,8 +109,10 @@ func (sm *ServerManager) NewRTMPPubSessionCB(session *rtmp.ServerSession) bool {
 func (sm *ServerManager) DelRTMPPubSessionCB(session *rtmp.ServerSession) {
 	sm.mutex.Lock()
 	defer sm.mutex.Unlock()
-	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
-	group.DelRTMPPubSession(session)
+	group := sm.getGroup(session.AppName, session.StreamName)
+	if group != nil {
+		group.DelRTMPPubSession(session)
+	}
 }
 
 // ServerObserver of rtmp.Server
@@ -127,8 +128,10 @@ func (sm *ServerManager) NewRTMPSubSessionCB(session *rtmp.ServerSession) bool {
 func (sm *ServerManager) DelRTMPSubSessionCB(session *rtmp.ServerSession) {
 	sm.mutex.Lock()
 	defer sm.mutex.Unlock()
-	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
-	group.DelRTMPSubSession(session)
+	group := sm.getGroup(session.AppName, session.StreamName)
+	if group != nil {
+		group.DelRTMPSubSession(session)
+	}
 }
 
 // ServerObserver of httpflv.Server
@@ -144,8 +147,10 @@ func (sm *ServerManager) NewHTTPFLVSubSessionCB(session *httpflv.SubSession) boo
 func (sm *ServerManager) DelHTTPFLVSubSessionCB(session *httpflv.SubSession) {
 	sm.mutex.Lock()
 	defer sm.mutex.Unlock()
-	group := sm.getOrCreateGroup(session.AppName, session.StreamName)
-	group.DelHTTPFLVSubSession(session)
+	group := sm.getGroup(session.AppName, session.StreamName)
+	if group != nil {
+		group.DelHTTPFLVSubSession(session)
+	}
 }
 
 func (sm *ServerManager) check() {
@@ -167,5 +172,13 @@ func (sm *ServerManager) getOrCreateGroup(appName string, streamName string) *Gr
 		sm.groupMap[streamName] = group
 	}
 	go group.RunLoop()
+	return group
+}
+
+func (sm *ServerManager) getGroup(appName string, streamName string) *Group {
+	group, exist := sm.groupMap[streamName]
+	if !exist {
+		return nil
+	}
 	return group
 }

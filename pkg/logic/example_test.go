@@ -141,12 +141,11 @@ func TestExample(t *testing.T) {
 	time.Sleep(1 * time.Second)
 
 	fileReader.Dispose()
-	HTTPFLVWriter.Dispose()
-	RTMPWriter.Dispose()
 	pushSession.Dispose()
-	// TODO chef: dispose 参数统一
 	httpflvPullSession.Dispose(nil)
 	rtmpPullSession.Dispose()
+	HTTPFLVWriter.Dispose()
+	RTMPWriter.Dispose()
 	sm.Dispose()
 
 	nazalog.Debugf("count. %d %d %d", fileTagCount.Load(), httpflvPullTagCount.Load(), rtmpPullTagCount.Load())

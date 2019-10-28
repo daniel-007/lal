@@ -113,7 +113,7 @@ func TestExample(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	go func() {
-		pullSession = rtmp.NewPullSession(rtmp.PullSessionTimeout{})
+		pullSession = rtmp.NewPullSession()
 		err = pullSession.Pull(pullURL, func(header rtmp.Header, timestampAbs uint32, message []byte) {
 			tag := logic.Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
 			w.WriteTag(*tag)
@@ -122,7 +122,7 @@ func TestExample(t *testing.T) {
 		log.Error(err)
 	}()
 
-	pushSession := rtmp.NewPushSession(rtmp.PushSessionTimeout{})
+	pushSession := rtmp.NewPushSession()
 	err = pushSession.Push(pushURL)
 	assert.Equal(t, nil, err)
 

@@ -35,10 +35,10 @@ func main() {
 
 	log.Info(bininfo.StringifySingleLine())
 
-	ps := rtmp.NewPushSession(rtmp.PushSessionTimeout{
-		ConnectTimeoutMS: 3000,
-		PushTimeoutMS:    5000,
-		WriteAVTimeoutMS: 10000,
+	ps := rtmp.NewPushSession(func(option *rtmp.PushSessionOption) {
+		option.ConnectTimeoutMS = 3000
+		option.PushTimeoutMS = 5000
+		option.WriteAVTimeoutMS = 10000
 	})
 	err = ps.Push(rtmpPushURL)
 	log.FatalIfErrorNotNil(err)

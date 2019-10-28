@@ -32,10 +32,10 @@ func main() {
 	err = w.WriteRaw(httpflv.FLVHeader)
 	log.FatalIfErrorNotNil(err)
 
-	session := rtmp.NewPullSession(rtmp.PullSessionTimeout{
-		ConnectTimeoutMS: 3000,
-		PullTimeoutMS:    5000,
-		ReadAVTimeoutMS:  10000,
+	session := rtmp.NewPullSession(func(option *rtmp.PullSessionOption) {
+		option.ConnectTimeoutMS = 3000
+		option.PullTimeoutMS = 3000
+		option.ReadAVTimeoutMS = 10000
 	})
 
 	err = session.Pull(url, func(header rtmp.Header, timestampAbs uint32, message []byte) {

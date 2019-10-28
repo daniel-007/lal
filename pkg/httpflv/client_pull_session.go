@@ -25,7 +25,10 @@ type PullSessionOption struct {
 	ReadTimeoutMS    int // 接收数据超时，单位毫秒，如果为0，则不设置超时
 }
 
-var defaultPullSessionOption = PullSessionOption{}
+var defaultPullSessionOption = PullSessionOption{
+	ConnectTimeoutMS: 0,
+	ReadTimeoutMS:    0,
+}
 
 type PullSession struct {
 	UniqueKey string

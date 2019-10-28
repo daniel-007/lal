@@ -12,18 +12,31 @@ type PullSession struct {
 	core *ClientSession
 }
 
-type PullSessionTimeout struct {
+type PullSessionOption struct {
 	ConnectTimeoutMS int
 	PullTimeoutMS    int
 	ReadAVTimeoutMS  int
 }
 
-func NewPullSession(timeout PullSessionTimeout) *PullSession {
+var defaultPullSessionOption = PullSessionOption{
+	ConnectTimeoutMS: 0,
+	PullTimeoutMS:    0,
+	ReadAVTimeoutMS:  0,
+}
+
+type ModPullSessionOption func(option *PullSessionOption)
+
+func NewPullSession(modOptions ...ModPullSessionOption) *PullSession {
+	opt := defaultPullSessionOption
+	for _, fn := range modOptions {
+		fn(&opt)
+	}
+
 	return &PullSession{
 		core: NewClientSession(CSTPullSession, func(option *ClientSessionOption) {
-			option.ConnectTimeoutMS = timeout.ConnectTimeoutMS
-			option.DoTimeoutMS = timeout.PullTimeoutMS
-			option.ReadAVTimeoutMS = timeout.ReadAVTimeoutMS
+			option.ConnectTimeoutMS = opt.ConnectTimeoutMS
+			option.DoTimeoutMS = opt.PullTimeoutMS
+			option.ReadAVTimeoutMS = opt.ReadAVTimeoutMS
 		}),
 	}
 }

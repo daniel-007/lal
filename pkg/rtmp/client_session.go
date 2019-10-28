@@ -32,7 +32,8 @@ type ClientSession struct {
 	t      ClientSessionType
 	option ClientSessionOption
 
-	onReadAVMsg            OnReadAVMsg
+	onReadAVMsg OnReadAVMsg
+
 	packer                 *MessagePacker
 	chunkComposer          *ChunkComposer
 	url                    *url.URL
@@ -62,7 +63,12 @@ type ClientSessionOption struct {
 	WriteAVTimeoutMS int // 发送音视频数据的超时
 }
 
-var defaultClientSessOption = ClientSessionOption{}
+var defaultClientSessOption = ClientSessionOption{
+	ConnectTimeoutMS: 0,
+	DoTimeoutMS:      0,
+	ReadAVTimeoutMS:  0,
+	WriteAVTimeoutMS: 0,
+}
 
 type ModClientSessionOption func(option *ClientSessionOption)
 

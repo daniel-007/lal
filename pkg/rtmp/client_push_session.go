@@ -12,18 +12,30 @@ type PushSession struct {
 	core *ClientSession
 }
 
-type PushSessionTimeout struct {
+type PushSessionOption struct {
 	ConnectTimeoutMS int
 	PushTimeoutMS    int
 	WriteAVTimeoutMS int
 }
 
-func NewPushSession(timeout PushSessionTimeout) *PushSession {
+var defaultPushSessionOption = PushSessionOption{
+	ConnectTimeoutMS: 0,
+	PushTimeoutMS:    0,
+	WriteAVTimeoutMS: 0,
+}
+
+type ModPushSessionOption func(option *PushSessionOption)
+
+func NewPushSession(modOptions ...ModPushSessionOption) *PushSession {
+	opt := defaultPushSessionOption
+	for _, fn := range modOptions {
+		fn(&opt)
+	}
 	return &PushSession{
 		core: NewClientSession(CSTPushSession, func(option *ClientSessionOption) {
-			option.ConnectTimeoutMS = timeout.ConnectTimeoutMS
-			option.DoTimeoutMS = timeout.PushTimeoutMS
-			option.WriteAVTimeoutMS = timeout.WriteAVTimeoutMS
+			option.ConnectTimeoutMS = opt.ConnectTimeoutMS
+			option.DoTimeoutMS = opt.PushTimeoutMS
+			option.WriteAVTimeoutMS = opt.WriteAVTimeoutMS
 		}),
 	}
 }

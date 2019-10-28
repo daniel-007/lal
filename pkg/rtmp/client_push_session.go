@@ -9,7 +9,7 @@
 package rtmp
 
 type PushSession struct {
-	*ClientSession
+	core *ClientSession
 }
 
 type PushSessionTimeout struct {
@@ -20,15 +20,29 @@ type PushSessionTimeout struct {
 
 func NewPushSession(timeout PushSessionTimeout) *PushSession {
 	return &PushSession{
-		ClientSession: NewClientSession(CSTPushSession, ClientSessionTimeout{
-			ConnectTimeoutMS: timeout.ConnectTimeoutMS,
-			DoTimeoutMS:      timeout.PushTimeoutMS,
-			WriteAVTimeoutMS: timeout.WriteAVTimeoutMS,
+		core: NewClientSession(CSTPushSession, func(option *ClientSessionOption) {
+			option.ConnectTimeoutMS = timeout.ConnectTimeoutMS
+			option.DoTimeoutMS = timeout.PushTimeoutMS
+			option.WriteAVTimeoutMS = timeout.WriteAVTimeoutMS
 		}),
 	}
 }
 
 // 阻塞直到收到服务端返回的 rtmp publish 对应结果的信令或发生错误
 func (s *PushSession) Push(rawURL string) error {
-	return s.doWithTimeout(rawURL)
+	return s.core.doWithTimeout(rawURL)
 }
+
+func (s *PushSession) AsyncWrite(msg []byte) error {
+	return s.core.AsyncWrite(msg)
+}
+
+func (s *PushSession) Flush() error {
+	return s.core.Flush()
+}
+
+func (s *PushSession) Dispose() {
+	s.core.Dispose()
+}
+
+// TODO chef: ClientSession WaitLoop 接口也可以暴露出来

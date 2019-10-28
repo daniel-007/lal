@@ -29,9 +29,10 @@ var ErrClientSessionTimeout = errors.New("lal.rtmp: client session timeout")
 type ClientSession struct {
 	UniqueKey string
 
+	t      ClientSessionType
+	option ClientSessionOption
+
 	onReadAVMsg            OnReadAVMsg
-	t                      ClientSessionType
-	timeout                ClientSessionTimeout
 	packer                 *MessagePacker
 	chunkComposer          *ChunkComposer
 	url                    *url.URL
@@ -53,17 +54,21 @@ const (
 	CSTPushSession
 )
 
-// 单位毫秒，如果为0，则没有超时
-type ClientSessionTimeout struct {
+type ClientSessionOption struct {
+	// 单位毫秒，如果为0，则没有超时
 	ConnectTimeoutMS int // 建立连接超时
 	DoTimeoutMS      int // 从发起连接（包含了建立连接的时间）到收到publish或play信令结果的超时
 	ReadAVTimeoutMS  int // 读取音视频数据的超时
 	WriteAVTimeoutMS int // 发送音视频数据的超时
 }
 
+var defaultClientSessOption = ClientSessionOption{}
+
+type ModClientSessionOption func(option *ClientSessionOption)
+
 // @param t: session的类型，只能是推或者拉
 // @param timeout: 设置各种超时
-func NewClientSession(t ClientSessionType, timeout ClientSessionTimeout) *ClientSession {
+func NewClientSession(t ClientSessionType, modOptions ...ModClientSessionOption) *ClientSession {
 	var uk string
 	switch t {
 	case CSTPullSession:
@@ -73,10 +78,15 @@ func NewClientSession(t ClientSessionType, timeout ClientSessionTimeout) *Client
 	}
 	log.Infof("lifecycle new rtmp client session. [%s]", uk)
 
+	option := defaultClientSessOption
+	for _, fn := range modOptions {
+		fn(&option)
+	}
+
 	return &ClientSession{
 		UniqueKey:     uk,
 		t:             t,
-		timeout:       timeout,
+		option:        option,
 		doResultChan:  make(chan struct{}, 1),
 		packer:        NewMessagePacker(),
 		chunkComposer: NewChunkComposer(),
@@ -85,11 +95,11 @@ func NewClientSession(t ClientSessionType, timeout ClientSessionTimeout) *Client
 
 // 阻塞直到收到服务端返回的 publish / play 对应结果的信令或者发生错误
 func (s *ClientSession) doWithTimeout(rawURL string) error {
-	if s.timeout.DoTimeoutMS == 0 {
+	if s.option.DoTimeoutMS == 0 {
 		err := <-s.do(rawURL)
 		return err
 	}
-	t := time.NewTimer(time.Duration(s.timeout.DoTimeoutMS) * time.Millisecond)
+	t := time.NewTimer(time.Duration(s.option.DoTimeoutMS) * time.Millisecond)
 	defer t.Stop()
 	select {
 	// TODO chef: 这种写法执行不到超时
@@ -406,7 +416,7 @@ func (s *ClientSession) tcpConnect() error {
 	}
 
 	var conn net.Conn
-	if conn, err = net.DialTimeout("tcp", addr, time.Duration(s.timeout.ConnectTimeoutMS)*time.Millisecond); err != nil {
+	if conn, err = net.DialTimeout("tcp", addr, time.Duration(s.option.ConnectTimeoutMS)*time.Millisecond); err != nil {
 		return err
 	}
 
@@ -419,8 +429,8 @@ func (s *ClientSession) tcpConnect() error {
 func (s *ClientSession) notifyDoResultSucc() {
 	s.conn.ModWriteChanSize(wChanSize)
 	s.conn.ModWriteBufSize(writeBufSize)
-	s.conn.ModReadTimeoutMS(s.timeout.ReadAVTimeoutMS)
-	s.conn.ModWriteTimeoutMS(s.timeout.WriteAVTimeoutMS)
+	s.conn.ModReadTimeoutMS(s.option.ReadAVTimeoutMS)
+	s.conn.ModWriteTimeoutMS(s.option.WriteAVTimeoutMS)
 
 	s.doResultChan <- struct{}{}
 }

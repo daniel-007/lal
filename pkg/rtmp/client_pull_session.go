@@ -9,7 +9,7 @@
 package rtmp
 
 type PullSession struct {
-	*ClientSession
+	core *ClientSession
 }
 
 type PullSessionTimeout struct {
@@ -20,10 +20,10 @@ type PullSessionTimeout struct {
 
 func NewPullSession(timeout PullSessionTimeout) *PullSession {
 	return &PullSession{
-		ClientSession: NewClientSession(CSTPullSession, ClientSessionTimeout{
-			ConnectTimeoutMS: timeout.ConnectTimeoutMS,
-			DoTimeoutMS:      timeout.PullTimeoutMS,
-			ReadAVTimeoutMS:  timeout.ReadAVTimeoutMS,
+		core: NewClientSession(CSTPullSession, func(option *ClientSessionOption) {
+			option.ConnectTimeoutMS = timeout.ConnectTimeoutMS
+			option.DoTimeoutMS = timeout.PullTimeoutMS
+			option.ReadAVTimeoutMS = timeout.ReadAVTimeoutMS
 		}),
 	}
 }
@@ -32,9 +32,13 @@ func NewPullSession(timeout PullSessionTimeout) *PullSession {
 //
 // @param onReadAVMsg: 回调结束后，内存块会被 PullSession 重复使用
 func (s *PullSession) Pull(rawURL string, onReadAVMsg OnReadAVMsg) error {
-	s.onReadAVMsg = onReadAVMsg
-	if err := s.doWithTimeout(rawURL); err != nil {
+	s.core.onReadAVMsg = onReadAVMsg
+	if err := s.core.doWithTimeout(rawURL); err != nil {
 		return err
 	}
-	return s.WaitLoop()
+	return s.core.WaitLoop()
+}
+
+func (s *PullSession) Dispose() {
+	s.core.Dispose()
 }

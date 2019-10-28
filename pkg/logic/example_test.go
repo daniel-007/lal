@@ -104,8 +104,8 @@ func TestExample(t *testing.T) {
 	}()
 
 	go func() {
-		httpflvPullSession = httpflv.NewPullSession(httpflv.PullSessionConfig{
-			ReadTimeoutMS: 500,
+		httpflvPullSession = httpflv.NewPullSession(func(option *httpflv.PullSessionOption) {
+			option.ReadTimeoutMS = 500
 		})
 		err := httpflvPullSession.Pull(httpflvPullURL, func(tag *httpflv.Tag) {
 			err := HTTPFLVWriter.WriteTag(*tag)

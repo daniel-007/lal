@@ -18,10 +18,7 @@ import (
 
 func main() {
 	url := parseFlag()
-	session := httpflv.NewPullSession(httpflv.PullSessionConfig{
-		ConnectTimeoutMS: 0,
-		ReadTimeoutMS:    0,
-	})
+	session := httpflv.NewPullSession()
 	err := session.Pull(url, func(tag *httpflv.Tag) {
 		log.Infof("ReadFLVTagCB. %+v %t %t", tag.Header, tag.IsAVCKeySeqHeader(), tag.IsAVCKeyNalu())
 	})

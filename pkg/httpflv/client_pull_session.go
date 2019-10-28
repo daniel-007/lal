@@ -20,35 +20,42 @@ import (
 	"github.com/q191201771/naza/pkg/unique"
 )
 
-type PullSessionConfig struct {
+type PullSessionOption struct {
 	ConnectTimeoutMS int // TCP连接时超时，单位毫秒，如果为0，则不设置超时
 	ReadTimeoutMS    int // 接收数据超时，单位毫秒，如果为0，则不设置超时
 }
 
+var defaultPullSessionOption = PullSessionOption{}
+
 type PullSession struct {
 	UniqueKey string
 
-	config PullSessionConfig
-
 	Conn connection.Connection
+
+	option PullSessionOption
 
 	host string
 	uri  string
 	addr string
-
-	readFLVTagCB ReadFLVTagCB
 }
 
-func NewPullSession(config PullSessionConfig) *PullSession {
+type ModPullSessionOption func(option *PullSessionOption)
+
+func NewPullSession(modOptions ...ModPullSessionOption) *PullSession {
+	option := defaultPullSessionOption
+	for _, fn := range modOptions {
+		fn(&option)
+	}
+
 	uk := unique.GenUniqueKey("FLVPULL")
 	log.Infof("lifecycle new PullSession. [%s]", uk)
 	return &PullSession{
-		config:    config,
+		option:    option,
 		UniqueKey: uk,
 	}
 }
 
-type ReadFLVTagCB func(tag *Tag)
+type OnReadFLVTag func(tag *Tag)
 
 // 阻塞直到拉流失败
 //
@@ -56,8 +63,8 @@ type ReadFLVTagCB func(tag *Tag)
 // http://{domain}/{app_name}/{stream_name}.flv
 // http://{ip}/{domain}/{app_name}/{stream_name}.flv
 //
-// @param readFLVTagCB 读取到 flv tag 数据时回调。回调结束后，PullSession不会再使用 <tag> 数据。
-func (session *PullSession) Pull(rawURL string, readFLVTagCB ReadFLVTagCB) error {
+// @param readFLVTagCB 读取到 flv tag 数据时回调。回调结束后，PullSession 不会再使用这块 <tag> 数据。
+func (session *PullSession) Pull(rawURL string, onReadFLVTag OnReadFLVTag) error {
 	if err := session.Connect(rawURL); err != nil {
 		return err
 	}
@@ -65,7 +72,7 @@ func (session *PullSession) Pull(rawURL string, readFLVTagCB ReadFLVTagCB) error
 		return err
 	}
 
-	return session.runReadLoop(readFLVTagCB)
+	return session.runReadLoop(onReadFLVTag)
 }
 
 func (session *PullSession) Dispose(err error) {
@@ -94,14 +101,14 @@ func (session *PullSession) Connect(rawURL string) error {
 	}
 
 	// # 建立连接
-	conn, err := net.DialTimeout("tcp", session.addr, time.Duration(session.config.ConnectTimeoutMS)*time.Millisecond)
+	conn, err := net.DialTimeout("tcp", session.addr, time.Duration(session.option.ConnectTimeoutMS)*time.Millisecond)
 	if err != nil {
 		return err
 	}
 	session.Conn = connection.New(conn, func(option *connection.Option) {
 		option.ReadBufSize = readBufSize
-		option.WriteTimeoutMS = session.config.ReadTimeoutMS // TODO chef: 为什么是 Read 赋值给 Write
-		option.ReadTimeoutMS = session.config.ReadTimeoutMS
+		option.WriteTimeoutMS = session.option.ReadTimeoutMS // TODO chef: 为什么是 Read 赋值给 Write
+		option.ReadTimeoutMS = session.option.ReadTimeoutMS
 	})
 	return nil
 }
@@ -146,7 +153,7 @@ func (session *PullSession) ReadTag() (*Tag, error) {
 	return readTag(session.Conn)
 }
 
-func (session *PullSession) runReadLoop(readFLVTagCB ReadFLVTagCB) error {
+func (session *PullSession) runReadLoop(onReadFLVTag OnReadFLVTag) error {
 	if _, _, err := session.ReadHTTPRespHeader(); err != nil {
 		return err
 	}
@@ -160,6 +167,6 @@ func (session *PullSession) runReadLoop(readFLVTagCB ReadFLVTagCB) error {
 		if err != nil {
 			return err
 		}
-		readFLVTagCB(tag)
+		onReadFLVTag(tag)
 	}
 }

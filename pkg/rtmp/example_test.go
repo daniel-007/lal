@@ -36,6 +36,7 @@ var (
 
 var (
 	pubSessionObs MockPubSessionObserver
+	pullSession   *rtmp.PullSession
 	subSession    *rtmp.ServerSession
 	wg            sync.WaitGroup
 	w             httpflv.FLVFileWriter
@@ -93,15 +94,6 @@ func (pso *MockPubSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestamp
 	subSession.AsyncWrite(absChunks)
 }
 
-type MockPullSessionObserver struct {
-}
-
-func (pso *MockPullSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
-	tag := logic.Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
-	w.WriteTag(*tag)
-	atomic.AddUint32(&wc, 1)
-}
-
 func TestExample(t *testing.T) {
 	var err error
 
@@ -120,12 +112,15 @@ func TestExample(t *testing.T) {
 	// 等待 server 开始监听
 	time.Sleep(100 * time.Millisecond)
 
-	var pso MockPullSessionObserver
-	pullSession := rtmp.NewPullSession(&pso, rtmp.PullSessionTimeout{})
-	log.Debug("tag1")
-	err = pullSession.Pull(pullURL)
-	assert.Equal(t, nil, err)
-	log.Debugf("tag2, %v", err)
+	go func() {
+		pullSession = rtmp.NewPullSession(rtmp.PullSessionTimeout{})
+		err = pullSession.Pull(pullURL, func(header rtmp.Header, timestampAbs uint32, message []byte) {
+			tag := logic.Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
+			w.WriteTag(*tag)
+			atomic.AddUint32(&wc, 1)
+		})
+		log.Error(err)
+	}()
 
 	pushSession := rtmp.NewPushSession(rtmp.PushSessionTimeout{})
 	err = pushSession.Push(pushURL)

@@ -24,13 +24,13 @@ import (
 
 var ErrClientSessionTimeout = errors.New("lal.rtmp: client session timeout")
 
-// rtmp客户端类型连接的底层实现
-// rtmp包的使用者应该优先使用基于ClientSession实现的PushSession和PullSession
+// rtmp 客户端类型连接的底层实现
+// package rtmp 的使用者应该优先使用基于 ClientSession 实现的 PushSession 和 PullSession
 type ClientSession struct {
 	UniqueKey string
 
+	onReadAVMsg            OnReadAVMsg
 	t                      ClientSessionType
-	obs                    PullSessionObserver // only for PullSession
 	timeout                ClientSessionTimeout
 	packer                 *MessagePacker
 	chunkComposer          *ChunkComposer
@@ -62,9 +62,8 @@ type ClientSessionTimeout struct {
 }
 
 // @param t: session的类型，只能是推或者拉
-// @param obs: 回调结束后，buffer会被重复使用
 // @param timeout: 设置各种超时
-func NewClientSession(t ClientSessionType, obs PullSessionObserver, timeout ClientSessionTimeout) *ClientSession {
+func NewClientSession(t ClientSessionType, timeout ClientSessionTimeout) *ClientSession {
 	var uk string
 	switch t {
 	case CSTPullSession:
@@ -77,7 +76,6 @@ func NewClientSession(t ClientSessionType, obs PullSessionObserver, timeout Clie
 	return &ClientSession{
 		UniqueKey:     uk,
 		t:             t,
-		obs:           obs,
 		timeout:       timeout,
 		doResultChan:  make(chan struct{}, 1),
 		packer:        NewMessagePacker(),
@@ -85,7 +83,7 @@ func NewClientSession(t ClientSessionType, obs PullSessionObserver, timeout Clie
 	}
 }
 
-// 阻塞直到收到服务端返回的 publish start / play start 信令 或者超时
+// 阻塞直到收到服务端返回的 publish / play 对应结果的信令或者发生错误
 func (s *ClientSession) doWithTimeout(rawURL string) error {
 	if s.timeout.DoTimeoutMS == 0 {
 		err := <-s.do(rawURL)
@@ -185,7 +183,7 @@ func (s *ClientSession) doMsg(stream *Stream) error {
 	case TypeidAudio:
 		fallthrough
 	case TypeidVideo:
-		s.obs.ReadRTMPAVMsgCB(stream.header, stream.timestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
+		s.onReadAVMsg(stream.header, stream.timestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
 	default:
 		log.Errorf("read unknown msg type id. [%s] typeid=%+v", s.UniqueKey, stream.header)
 		panic(0)
@@ -212,7 +210,7 @@ func (s *ClientSession) doDataMessageAMF0(stream *Stream) error {
 		log.Error(val)
 		log.Error(hex.Dump(stream.msg.buf[stream.msg.b:stream.msg.e]))
 	}
-	s.obs.ReadRTMPAVMsgCB(stream.header, stream.timestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
+	s.onReadAVMsg(stream.header, stream.timestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
 	return nil
 }
 

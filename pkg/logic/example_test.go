@@ -52,17 +52,6 @@ var (
 	rtmpPullTagCount    nazaatomic.Uint32
 )
 
-type MockRTMPPullSessionObserver struct {
-}
-
-// TODO chef: httpflv 和 rtmp 两种协议的 pull 接口形式不统一
-func (mrpso *MockRTMPPullSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
-	tag := Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
-	err := RTMPWriter.WriteTag(*tag)
-	assert.Equal(tt, nil, err)
-	rtmpPullTagCount.Increment()
-}
-
 func TestExample(t *testing.T) {
 	tt = t
 
@@ -95,12 +84,16 @@ func TestExample(t *testing.T) {
 	assert.Equal(t, nil, err)
 
 	go func() {
-		var mrpso MockRTMPPullSessionObserver
-		rtmpPullSession = rtmp.NewPullSession(&mrpso, rtmp.PullSessionTimeout{
+		rtmpPullSession = rtmp.NewPullSession(rtmp.PullSessionTimeout{
 			ReadAVTimeoutMS: 500,
 		})
-		err := rtmpPullSession.Pull(rtmpPullURL)
-		assert.Equal(t, nil, err)
+		err := rtmpPullSession.Pull(rtmpPullURL, func(header rtmp.Header, timestampAbs uint32, message []byte) {
+			tag := Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
+			err := RTMPWriter.WriteTag(*tag)
+			assert.Equal(tt, nil, err)
+			rtmpPullTagCount.Increment()
+		})
+		nazalog.Error(err)
 	}()
 
 	go func() {

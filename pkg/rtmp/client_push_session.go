@@ -20,7 +20,7 @@ type PushSessionTimeout struct {
 
 func NewPushSession(timeout PushSessionTimeout) *PushSession {
 	return &PushSession{
-		ClientSession: NewClientSession(CSTPushSession, nil, ClientSessionTimeout{
+		ClientSession: NewClientSession(CSTPushSession, ClientSessionTimeout{
 			ConnectTimeoutMS: timeout.ConnectTimeoutMS,
 			DoTimeoutMS:      timeout.PushTimeoutMS,
 			WriteAVTimeoutMS: timeout.WriteAVTimeoutMS,
@@ -28,6 +28,7 @@ func NewPushSession(timeout PushSessionTimeout) *PushSession {
 	}
 }
 
+// 阻塞直到收到服务端返回的 rtmp publish 对应结果的信令或发生错误
 func (s *PushSession) Push(rawURL string) error {
 	return s.doWithTimeout(rawURL)
 }

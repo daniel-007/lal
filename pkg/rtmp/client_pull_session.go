@@ -43,9 +43,9 @@ func NewPullSession(modOptions ...ModPullSessionOption) *PullSession {
 
 // 阻塞直到连接断开或发生错误
 //
-// @param onReadAVMsg: 回调结束后，内存块会被 PullSession 重复使用
-func (s *PullSession) Pull(rawURL string, onReadAVMsg OnReadAVMsg) error {
-	s.core.onReadAVMsg = onReadAVMsg
+// @param onReadRTMPAVMsg: 回调结束后，内存块会被 PullSession 重复使用
+func (s *PullSession) Pull(rawURL string, onReadRTMPAVMsg OnReadRTMPAVMsg) error {
+	s.core.onReadRTMPAVMsg = onReadRTMPAVMsg
 	if err := s.core.doWithTimeout(rawURL); err != nil {
 		return err
 	}

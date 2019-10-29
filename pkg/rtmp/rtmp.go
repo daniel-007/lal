@@ -62,7 +62,7 @@ type AVMsg struct {
 }
 
 type AVMsgObserver interface {
-	OnReadAVMsg(msg AVMsg)
+	OnReadRTMPAVMsg(msg AVMsg)
 }
 
-type OnReadAVMsg func(msg AVMsg)
+type OnReadRTMPAVMsg func(msg AVMsg)

@@ -151,7 +151,7 @@ func (group *Group) IsInExist() bool {
 }
 
 // PubSession or PullSession
-func (group *Group) OnReadAVMsg(msg rtmp.AVMsg) {
+func (group *Group) OnReadRTMPAVMsg(msg rtmp.AVMsg) {
 	group.mutex.Lock()
 	defer group.mutex.Unlock()
 

@@ -73,7 +73,7 @@ func (so *MockServerObserver) DelRTMPSubSessionCB(session *rtmp.ServerSession) {
 type MockPubSessionObserver struct {
 }
 
-func (pso *MockPubSessionObserver) OnReadAVMsg(msg rtmp.AVMsg) {
+func (pso *MockPubSessionObserver) OnReadRTMPAVMsg(msg rtmp.AVMsg) {
 	bc++
 	// 转发
 	var currHeader rtmp.Header

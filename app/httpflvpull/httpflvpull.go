@@ -16,6 +16,8 @@ import (
 	log "github.com/q191201771/naza/pkg/nazalog"
 )
 
+// TODO chef: 存储成 flv 文件
+
 func main() {
 	url := parseFlag()
 	session := httpflv.NewPullSession()

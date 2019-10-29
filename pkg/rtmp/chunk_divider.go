@@ -24,12 +24,12 @@ var defaultChunkDivider = ChunkDivider{
 	localChunkSize: LocalChunkSize,
 }
 
+// @param header 注意，内部使用 TimestampAbs 而非 Timestamp
 func Message2Chunks(message []byte, header *Header) []byte {
 	return defaultChunkDivider.Message2Chunks(message, header)
 }
 
 // TODO chef: 新的 message 的第一个 chunk 始终使用 fmt0 格式，没有参考前一个 message
-// @param header 内部使用 TimestampAbs 而非 Timestamp
 func (d *ChunkDivider) Message2Chunks(message []byte, header *Header) []byte {
 	return message2Chunks(message, header, nil, d.localChunkSize)
 }

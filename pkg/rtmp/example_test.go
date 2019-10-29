@@ -75,20 +75,7 @@ type MockPubSessionObserver struct {
 func (pso *MockPubSessionObserver) OnReadRTMPAVMsg(msg rtmp.AVMsg) {
 	bc++
 	// 转发
-	var currHeader rtmp.Header
-	currHeader.MsgLen = uint32(len(msg.Message))
-	currHeader.Timestamp = msg.Header.TimestampAbs
-	currHeader.TimestampAbs = msg.Header.TimestampAbs
-	currHeader.MsgTypeID = msg.Header.MsgTypeID
-	currHeader.MsgStreamID = rtmp.MSID1
-	switch msg.Header.MsgTypeID {
-	case rtmp.TypeidDataMessageAMF0:
-		currHeader.CSID = rtmp.CSIDAMF
-	case rtmp.TypeidAudio:
-		currHeader.CSID = rtmp.CSIDAudio
-	case rtmp.TypeidVideo:
-		currHeader.CSID = rtmp.CSIDVideo
-	}
+	currHeader := logic.Trans.MakeDefaultRTMPHeader(msg.Header)
 	var absChunks []byte
 	absChunks = rtmp.Message2Chunks(msg.Message, &currHeader)
 	subSession.AsyncWrite(absChunks)

@@ -57,4 +57,4 @@ func (s *PushSession) Dispose() {
 	s.core.Dispose()
 }
 
-// TODO chef: ClientSession WaitLoop 接口也可以暴露出来
+// TODO chef: 建议 ClientSession WaitLoop 接口也可以暴露出来

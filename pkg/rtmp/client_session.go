@@ -199,7 +199,7 @@ func (s *ClientSession) doMsg(stream *Stream) error {
 	case TypeidAudio:
 		fallthrough
 	case TypeidVideo:
-		s.onReadAVMsg(stream.header, stream.timestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
+		s.onReadAVMsg(stream.toAVMsg())
 	default:
 		log.Errorf("read unknown msg type id. [%s] typeid=%+v", s.UniqueKey, stream.header)
 		panic(0)
@@ -226,7 +226,7 @@ func (s *ClientSession) doDataMessageAMF0(stream *Stream) error {
 		log.Error(val)
 		log.Error(hex.Dump(stream.msg.buf[stream.msg.b:stream.msg.e]))
 	}
-	s.onReadAVMsg(stream.header, stream.timestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
+	s.onReadAVMsg(stream.toAVMsg())
 	return nil
 }
 

@@ -56,8 +56,14 @@ const (
 	MSID1 = 1 // publish、play、onStatus 以及 音视频数据
 )
 
+type AVMsg struct {
+	Header       Header
+	TimestampAbs uint32
+	Message      []byte // 不包含 rtmp 头
+}
+
 // TODO chef: 和 OnReadAVMsg 重复
-// 接收到音视频类型数据时的回调函数。目前被PullSession以及PubSession使用。
+// 接收到音视频类型数据时的回调函数。目前被 PubSession 使用。
 type AVMsgObserver interface {
 	// @param header:
 	// @param timestampAbs: 绝对时间戳
@@ -65,4 +71,4 @@ type AVMsgObserver interface {
 	ReadRTMPAVMsgCB(header Header, timestampAbs uint32, message []byte)
 }
 
-type OnReadAVMsg func(header Header, timestampAbs uint32, message []byte)
+type OnReadAVMsg func(msg AVMsg)

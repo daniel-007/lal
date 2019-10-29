@@ -28,7 +28,8 @@ func Message2Chunks(message []byte, header *Header) []byte {
 	return defaultChunkDivider.Message2Chunks(message, header)
 }
 
-// TODO chef: 新的message的第一个chunk始终使用fmt0格式，没有参考前一个message
+// TODO chef: 新的 message 的第一个 chunk 始终使用 fmt0 格式，没有参考前一个 message
+// @param header 因为没有参考前一个 message，所以 header 中的时间戳写绝对时间戳即可
 func (d *ChunkDivider) Message2Chunks(message []byte, header *Header) []byte {
 	return message2Chunks(message, header, nil, d.localChunkSize)
 }

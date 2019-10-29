@@ -17,13 +17,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/q191201771/naza/pkg/nazaatomic"
-	"github.com/q191201771/naza/pkg/nazalog"
-
 	"github.com/q191201771/lal/pkg/httpflv"
 	"github.com/q191201771/lal/pkg/rtmp"
-
 	"github.com/q191201771/naza/pkg/assert"
+	"github.com/q191201771/naza/pkg/nazaatomic"
+	"github.com/q191201771/naza/pkg/nazalog"
 )
 
 var (
@@ -87,8 +85,8 @@ func TestExample(t *testing.T) {
 		rtmpPullSession = rtmp.NewPullSession(func(option *rtmp.PullSessionOption) {
 			option.ReadAVTimeoutMS = 500
 		})
-		err := rtmpPullSession.Pull(rtmpPullURL, func(header rtmp.Header, timestampAbs uint32, message []byte) {
-			tag := Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
+		err := rtmpPullSession.Pull(rtmpPullURL, func(msg rtmp.AVMsg) {
+			tag := Trans.RTMPMsg2FLVTag(msg.Header, msg.TimestampAbs, msg.Message)
 			err := RTMPWriter.WriteTag(*tag)
 			assert.Equal(tt, nil, err)
 			rtmpPullTagCount.Increment()

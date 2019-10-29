@@ -20,7 +20,7 @@ func main() {
 	url := parseFlag()
 	session := httpflv.NewPullSession()
 	err := session.Pull(url, func(tag *httpflv.Tag) {
-		log.Infof("ReadFLVTagCB. %+v %t %t", tag.Header, tag.IsAVCKeySeqHeader(), tag.IsAVCKeyNalu())
+		log.Infof("onReadFLVTag. %+v %t %t", tag.Header, tag.IsAVCKeySeqHeader(), tag.IsAVCKeyNalu())
 	})
 	if err != nil {
 		log.Error(err)

@@ -55,7 +55,7 @@ const (
 type TagHeader struct {
 	T         uint8  // type
 	DataSize  uint32 // body大小，不包含header和prev tag size字段
-	Timestamp uint32
+	Timestamp uint32 // 绝对时间戳，单位毫秒
 	StreamID  uint32 // always 0
 }
 

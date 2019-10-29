@@ -38,9 +38,9 @@ func main() {
 		option.ReadAVTimeoutMS = 10000
 	})
 
-	err = session.Pull(url, func(header rtmp.Header, timestampAbs uint32, message []byte) {
-		log.Infof("%+v, abs ts=%d", header, timestampAbs)
-		tag := logic.Trans.RTMPMsg2FLVTag(header, timestampAbs, message)
+	err = session.Pull(url, func(msg rtmp.AVMsg) {
+		log.Infof("%+v, abs ts=%d", msg.Header, msg.TimestampAbs)
+		tag := logic.Trans.RTMPMsg2FLVTag(msg.Header, msg.TimestampAbs, msg.Message)
 		err := w.WriteTag(*tag)
 		log.FatalIfErrorNotNil(err)
 	})

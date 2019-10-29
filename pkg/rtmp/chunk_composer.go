@@ -152,7 +152,6 @@ func (c *ChunkComposer) RunLoop(reader io.Reader, cb CompleteMessageCB) error {
 			}
 
 			stream.header.CSID = csid
-			//log.Debugf("CHEFGREPME %+v %d %d", stream.header, stream.header.TimestampAbs, stream.header.MsgLen)
 			if err := cb(stream); err != nil {
 				return err
 			}

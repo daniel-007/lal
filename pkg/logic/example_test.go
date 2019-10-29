@@ -86,7 +86,7 @@ func TestExample(t *testing.T) {
 			option.ReadAVTimeoutMS = 500
 		})
 		err := rtmpPullSession.Pull(rtmpPullURL, func(msg rtmp.AVMsg) {
-			tag := Trans.RTMPMsg2FLVTag(msg.Header, msg.Header.TimestampAbs, msg.Message)
+			tag := Trans.RTMPMsg2FLVTag(msg)
 			err := RTMPWriter.WriteTag(*tag)
 			assert.Equal(tt, nil, err)
 			rtmpPullTagCount.Increment()
@@ -121,8 +121,8 @@ func TestExample(t *testing.T) {
 		}
 		assert.Equal(t, nil, err)
 		fileTagCount.Increment()
-		h, _, m := Trans.FLVTag2RTMPMsg(*tag)
-		chunks := rtmp.Message2Chunks(m, &h)
+		msg := Trans.FLVTag2RTMPMsg(*tag)
+		chunks := rtmp.Message2Chunks(msg.Message, &msg.Header)
 		err = pushSession.AsyncWrite(chunks)
 		assert.Equal(t, nil, err)
 	}

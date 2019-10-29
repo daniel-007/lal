@@ -12,7 +12,6 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
-	"os"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -79,6 +78,7 @@ func (pso *MockPubSessionObserver) OnReadRTMPAVMsg(msg rtmp.AVMsg) {
 	var currHeader rtmp.Header
 	currHeader.MsgLen = uint32(len(msg.Message))
 	currHeader.Timestamp = msg.Header.TimestampAbs
+	currHeader.TimestampAbs = msg.Header.TimestampAbs
 	currHeader.MsgTypeID = msg.Header.MsgTypeID
 	currHeader.MsgStreamID = rtmp.MSID1
 	switch msg.Header.MsgTypeID {
@@ -115,7 +115,7 @@ func TestExample(t *testing.T) {
 	go func() {
 		pullSession = rtmp.NewPullSession()
 		err = pullSession.Pull(pullURL, func(msg rtmp.AVMsg) {
-			tag := logic.Trans.RTMPMsg2FLVTag(msg.Header, msg.Header.TimestampAbs, msg.Message)
+			tag := logic.Trans.RTMPMsg2FLVTag(msg)
 			w.WriteTag(*tag)
 			atomic.AddUint32(&wc, 1)
 		})
@@ -140,8 +140,11 @@ func TestExample(t *testing.T) {
 		}
 		assert.Equal(t, nil, err)
 		rc++
-		h, _, m := logic.Trans.FLVTag2RTMPMsg(*tag)
-		chunks := rtmp.Message2Chunks(m, &h)
+		//log.Debugf("send tag. %d", tag.Header.Timestamp)
+		msg := logic.Trans.FLVTag2RTMPMsg(*tag)
+		//log.Debugf("send msg. %d %d", msg.Header.Timestamp, msg.Header.TimestampAbs)
+		chunks := rtmp.Message2Chunks(msg.Message, &msg.Header)
+		//log.Debugf("%s", hex.Dump(chunks[:16]))
 		err = pushSession.AsyncWrite(chunks)
 		assert.Equal(t, nil, err)
 	}
@@ -180,6 +183,6 @@ func compareFile(t *testing.T) {
 	assert.Equal(t, nil, err)
 	res := bytes.Compare(r, w)
 	assert.Equal(t, 0, res)
-	err = os.Remove(wFLVFile)
+	//err = os.Remove(wFLVFile)
 	assert.Equal(t, nil, err)
 }

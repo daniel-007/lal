@@ -73,15 +73,15 @@ func (so *MockServerObserver) DelRTMPSubSessionCB(session *rtmp.ServerSession) {
 type MockPubSessionObserver struct {
 }
 
-func (pso *MockPubSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
+func (pso *MockPubSessionObserver) OnReadAVMsg(msg rtmp.AVMsg) {
 	bc++
 	// 转发
 	var currHeader rtmp.Header
-	currHeader.MsgLen = uint32(len(message))
-	currHeader.Timestamp = timestampAbs
-	currHeader.MsgTypeID = header.MsgTypeID
+	currHeader.MsgLen = uint32(len(msg.Message))
+	currHeader.Timestamp = msg.Header.TimestampAbs
+	currHeader.MsgTypeID = msg.Header.MsgTypeID
 	currHeader.MsgStreamID = rtmp.MSID1
-	switch header.MsgTypeID {
+	switch msg.Header.MsgTypeID {
 	case rtmp.TypeidDataMessageAMF0:
 		currHeader.CSID = rtmp.CSIDAMF
 	case rtmp.TypeidAudio:
@@ -90,7 +90,7 @@ func (pso *MockPubSessionObserver) ReadRTMPAVMsgCB(header rtmp.Header, timestamp
 		currHeader.CSID = rtmp.CSIDVideo
 	}
 	var absChunks []byte
-	absChunks = rtmp.Message2Chunks(message, &currHeader)
+	absChunks = rtmp.Message2Chunks(msg.Message, &currHeader)
 	subSession.AsyncWrite(absChunks)
 }
 

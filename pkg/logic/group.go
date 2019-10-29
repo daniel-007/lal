@@ -151,11 +151,12 @@ func (group *Group) IsInExist() bool {
 }
 
 // PubSession or PullSession
-func (group *Group) ReadRTMPAVMsgCB(header rtmp.Header, timestampAbs uint32, message []byte) {
+func (group *Group) OnReadAVMsg(msg rtmp.AVMsg) {
 	group.mutex.Lock()
 	defer group.mutex.Unlock()
 
-	group.broadcastRTMP(header, timestampAbs, message)
+	// TODO chef: 改成 msg rtmp.AVMsg
+	group.broadcastRTMP(msg.Header, msg.Header.TimestampAbs, msg.Message)
 }
 
 func (group *Group) broadcastRTMP(header rtmp.Header, timestampAbs uint32, message []byte) {

@@ -30,8 +30,7 @@ type StreamMsg struct {
 
 type Stream struct {
 	header Header
-
-	msg StreamMsg
+	msg    StreamMsg
 }
 
 func NewStream() *Stream {

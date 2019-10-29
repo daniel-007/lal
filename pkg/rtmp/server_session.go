@@ -149,7 +149,7 @@ func (s *ServerSession) doMsg(stream *Stream) error {
 			return ErrRTMP
 		}
 		//log.Infof("t:%d ts:%d len:%d", stream.header.MsgTypeID, stream.header.timestampAbs, stream.msg.e - stream.msg.b)
-		s.avObs.ReadRTMPAVMsgCB(stream.header, stream.header.TimestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
+		s.avObs.OnReadAVMsg(stream.toAVMsg())
 	default:
 		log.Warnf("unknown message. [%s] typeid=%d", s.UniqueKey, stream.header.MsgTypeID)
 
@@ -196,7 +196,7 @@ func (s *ServerSession) doDataMessageAMF0(stream *Stream) error {
 		return nil
 	}
 
-	s.avObs.ReadRTMPAVMsgCB(stream.header, stream.header.TimestampAbs, stream.msg.buf[stream.msg.b:stream.msg.e])
+	s.avObs.OnReadAVMsg(stream.toAVMsg())
 	return nil
 }
 

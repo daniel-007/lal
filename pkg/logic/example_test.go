@@ -86,7 +86,7 @@ func TestExample(t *testing.T) {
 			option.ReadAVTimeoutMS = 500
 		})
 		err := rtmpPullSession.Pull(rtmpPullURL, func(msg rtmp.AVMsg) {
-			tag := Trans.RTMPMsg2FLVTag(msg.Header, msg.TimestampAbs, msg.Message)
+			tag := Trans.RTMPMsg2FLVTag(msg.Header, msg.Header.TimestampAbs, msg.Message)
 			err := RTMPWriter.WriteTag(*tag)
 			assert.Equal(tt, nil, err)
 			rtmpPullTagCount.Increment()

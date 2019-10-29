@@ -75,7 +75,7 @@ func (c *ChunkComposer) RunLoop(reader io.Reader, cb CompleteMessageCB) error {
 			}
 			// 包头中为绝对时间戳
 			stream.header.Timestamp = bele.BEUint24(bootstrap)
-			stream.timestampAbs = stream.header.Timestamp
+			stream.header.TimestampAbs = stream.header.Timestamp
 			stream.header.MsgLen = bele.BEUint24(bootstrap[3:])
 			stream.header.MsgTypeID = bootstrap[6]
 			stream.header.MsgStreamID = int(bele.LEUint32(bootstrap[7:]))
@@ -87,7 +87,7 @@ func (c *ChunkComposer) RunLoop(reader io.Reader, cb CompleteMessageCB) error {
 			}
 			// 包头中为相对时间戳
 			stream.header.Timestamp = bele.BEUint24(bootstrap)
-			stream.timestampAbs += stream.header.Timestamp
+			stream.header.TimestampAbs += stream.header.Timestamp
 			stream.header.MsgLen = bele.BEUint24(bootstrap[3:])
 			stream.header.MsgTypeID = bootstrap[6]
 
@@ -98,7 +98,7 @@ func (c *ChunkComposer) RunLoop(reader io.Reader, cb CompleteMessageCB) error {
 			}
 			// 包头中为相对时间戳
 			stream.header.Timestamp = bele.BEUint24(bootstrap)
-			stream.timestampAbs += stream.header.Timestamp
+			stream.header.TimestampAbs += stream.header.Timestamp
 
 		case 3:
 			// noop
@@ -116,17 +116,17 @@ func (c *ChunkComposer) RunLoop(reader io.Reader, cb CompleteMessageCB) error {
 			stream.header.Timestamp = bele.BEUint32(bootstrap)
 			switch fmt {
 			case 0:
-				stream.timestampAbs = stream.header.Timestamp
+				stream.header.TimestampAbs = stream.header.Timestamp
 			case 1:
 				fallthrough
 			case 2:
-				stream.timestampAbs = stream.timestampAbs - maxTimestampInMessageHeader + stream.header.Timestamp
+				stream.header.TimestampAbs = stream.header.TimestampAbs - maxTimestampInMessageHeader + stream.header.Timestamp
 			case 3:
 				// noop
 			}
 		}
 		//stream.header.CSID = csid
-		//log.Debugf("CHEFGREPME tag1 fmt:%d header:%+v csid:%d len:%d ts:%d", fmt, stream.header, csid, stream.header.MsgLen, stream.timestampAbs)
+		//log.Debugf("CHEFGREPME tag1 fmt:%d header:%+v csid:%d len:%d ts:%d", fmt, stream.header, csid, stream.header.MsgLen, stream.header.TimestampAbs)
 
 		var neededSize uint32
 		if stream.header.MsgLen <= c.peerChunkSize {
@@ -152,7 +152,7 @@ func (c *ChunkComposer) RunLoop(reader io.Reader, cb CompleteMessageCB) error {
 			}
 
 			stream.header.CSID = csid
-			//log.Debugf("CHEFGREPME %+v %d %d", stream.header, stream.timestampAbs, stream.header.MsgLen)
+			//log.Debugf("CHEFGREPME %+v %d %d", stream.header, stream.header.TimestampAbs, stream.header.MsgLen)
 			if err := cb(stream); err != nil {
 				return err
 			}

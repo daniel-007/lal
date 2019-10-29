@@ -39,8 +39,8 @@ func main() {
 	})
 
 	err = session.Pull(url, func(msg rtmp.AVMsg) {
-		log.Infof("%+v, abs ts=%d", msg.Header, msg.TimestampAbs)
-		tag := logic.Trans.RTMPMsg2FLVTag(msg.Header, msg.TimestampAbs, msg.Message)
+		log.Infof("%+v, abs ts=%d", msg.Header, msg.Header.TimestampAbs)
+		tag := logic.Trans.RTMPMsg2FLVTag(msg.Header, msg.Header.TimestampAbs, msg.Message)
 		err := w.WriteTag(*tag)
 		log.FatalIfErrorNotNil(err)
 	})

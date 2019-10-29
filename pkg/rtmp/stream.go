@@ -13,15 +13,13 @@ import log "github.com/q191201771/naza/pkg/nazalog"
 const initMsgLen = 4096
 
 type Header struct {
-	CSID   int
-	MsgLen uint32
-
-	// NOTICE 是 rtmp 协议 header 中的时间戳，可能是绝对的，也可能是相对的。
-	// 如果需要绝对时间戳，应该使用 Stream 中的 timestampAbs
-	Timestamp uint32
-
-	MsgTypeID   uint8 // 8 audio 9 video 18 metadata
+	CSID        int
+	MsgLen      uint32
+	Timestamp   uint32 // NOTICE 是 rtmp 协议 header 中的时间戳，可能是绝对的，也可能是相对的。
+	MsgTypeID   uint8  // 8 audio 9 video 18 metadata
 	MsgStreamID int
+
+	TimestampAbs uint32 // 经过计算得到的流上的绝对时间戳
 }
 
 type StreamMsg struct {
@@ -31,8 +29,7 @@ type StreamMsg struct {
 }
 
 type Stream struct {
-	header       Header
-	timestampAbs uint32
+	header Header
 
 	msg StreamMsg
 }
@@ -47,9 +44,8 @@ func NewStream() *Stream {
 
 func (stream *Stream) toAVMsg() AVMsg {
 	return AVMsg{
-		Header:       stream.header,
-		TimestampAbs: stream.timestampAbs,
-		Message:      stream.msg.buf[stream.msg.b:stream.msg.e],
+		Header:  stream.header,
+		Message: stream.msg.buf[stream.msg.b:stream.msg.e],
 	}
 }
 

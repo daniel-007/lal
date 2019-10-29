@@ -115,7 +115,7 @@ func TestExample(t *testing.T) {
 	go func() {
 		pullSession = rtmp.NewPullSession()
 		err = pullSession.Pull(pullURL, func(msg rtmp.AVMsg) {
-			tag := logic.Trans.RTMPMsg2FLVTag(msg.Header, msg.TimestampAbs, msg.Message)
+			tag := logic.Trans.RTMPMsg2FLVTag(msg.Header, msg.Header.TimestampAbs, msg.Message)
 			w.WriteTag(*tag)
 			atomic.AddUint32(&wc, 1)
 		})

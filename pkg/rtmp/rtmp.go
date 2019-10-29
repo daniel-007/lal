@@ -57,9 +57,8 @@ const (
 )
 
 type AVMsg struct {
-	Header       Header
-	TimestampAbs uint32
-	Message      []byte // 不包含 rtmp 头
+	Header  Header
+	Message []byte // 不包含 rtmp 头
 }
 
 // TODO chef: 和 OnReadAVMsg 重复

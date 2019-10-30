@@ -14,9 +14,10 @@ import (
 	"github.com/q191201771/naza/pkg/bele"
 )
 
-// TODO chef: make these const
-const TagHeaderSize int = 11
-const prevTagSizeFieldSize int = 4
+const (
+	TagHeaderSize        int = 11
+	prevTagSizeFieldSize int = 4
+)
 
 const (
 	TagTypeMetadata uint8 = 18
@@ -142,29 +143,27 @@ func readTagHeader(rd io.Reader) (h TagHeader, rawHeader []byte, err error) {
 	return
 }
 
-func readTag(rd io.Reader) (*Tag, error) {
+func readTag(rd io.Reader) (tag Tag, err error) {
 	rawHeader := make([]byte, TagHeaderSize)
-	if _, err := io.ReadAtLeast(rd, rawHeader, TagHeaderSize); err != nil {
-		return nil, err
+	if _, err = io.ReadAtLeast(rd, rawHeader, TagHeaderSize); err != nil {
+		return
 	}
 	header := parseTagHeader(rawHeader)
 
 	needed := int(header.DataSize) + prevTagFieldSize
-	tag := &Tag{}
 	tag.Header = header
 	tag.Raw = make([]byte, TagHeaderSize+needed)
 	copy(tag.Raw, rawHeader)
 
-	if _, err := io.ReadAtLeast(rd, tag.Raw[TagHeaderSize:], needed); err != nil {
-		return nil, err
+	if _, err = io.ReadAtLeast(rd, tag.Raw[TagHeaderSize:], needed); err != nil {
+		return
 	}
 
-	return tag, nil
+	return
 }
 
-func (tag *Tag) cloneTag() *Tag {
-	res := &Tag{}
-	res.Header = tag.Header
-	res.Raw = append(res.Raw, tag.Raw...)
-	return res
+func (tag *Tag) cloneTag() (out Tag) {
+	out.Header = tag.Header
+	out.Raw = append(out.Raw, tag.Raw...)
+	return
 }

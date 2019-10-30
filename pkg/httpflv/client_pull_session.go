@@ -58,7 +58,7 @@ func NewPullSession(modOptions ...ModPullSessionOption) *PullSession {
 	}
 }
 
-type OnReadFLVTag func(tag *Tag)
+type OnReadFLVTag func(tag Tag)
 
 // 阻塞直到拉流失败
 //
@@ -152,7 +152,7 @@ func (session *PullSession) ReadFLVHeader() ([]byte, error) {
 	return flvHeader, nil
 }
 
-func (session *PullSession) ReadTag() (*Tag, error) {
+func (session *PullSession) ReadTag() (Tag, error) {
 	return readTag(session.Conn)
 }
 

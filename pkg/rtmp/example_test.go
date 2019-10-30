@@ -128,7 +128,7 @@ func TestExample(t *testing.T) {
 		assert.Equal(t, nil, err)
 		rc++
 		//log.Debugf("send tag. %d", tag.Header.Timestamp)
-		msg := logic.Trans.FLVTag2RTMPMsg(*tag)
+		msg := logic.Trans.FLVTag2RTMPMsg(tag)
 		//log.Debugf("send msg. %d %d", msg.Header.Timestamp, msg.Header.TimestampAbs)
 		chunks := rtmp.Message2Chunks(msg.Message, &msg.Header)
 		//log.Debugf("%s", hex.Dump(chunks[:16]))

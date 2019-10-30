@@ -155,7 +155,6 @@ func (group *Group) OnReadRTMPAVMsg(msg rtmp.AVMsg) {
 	group.mutex.Lock()
 	defer group.mutex.Unlock()
 
-	// TODO chef: 改成 msg rtmp.AVMsg
 	group.broadcastRTMP(msg)
 }
 

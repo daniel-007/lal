@@ -43,7 +43,7 @@ func TestExample(t *testing.T) {
 		option.ConnectTimeoutMS = 1000
 		option.ReadTimeoutMS = 1000
 	})
-	err = pullSession.Pull(pullURL, func(tag *httpflv.Tag) {
+	err = pullSession.Pull(pullURL, func(tag httpflv.Tag) {
 	})
 	log.Debugf("pull failed. err=%+v", err)
 }

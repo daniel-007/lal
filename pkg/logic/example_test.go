@@ -98,8 +98,8 @@ func TestExample(t *testing.T) {
 		httpflvPullSession = httpflv.NewPullSession(func(option *httpflv.PullSessionOption) {
 			option.ReadTimeoutMS = 500
 		})
-		err := httpflvPullSession.Pull(httpflvPullURL, func(tag *httpflv.Tag) {
-			err := HTTPFLVWriter.WriteTag(*tag)
+		err := httpflvPullSession.Pull(httpflvPullURL, func(tag httpflv.Tag) {
+			err := HTTPFLVWriter.WriteTag(tag)
 			assert.Equal(t, nil, err)
 			httpflvPullTagCount.Increment()
 		})
@@ -121,7 +121,7 @@ func TestExample(t *testing.T) {
 		}
 		assert.Equal(t, nil, err)
 		fileTagCount.Increment()
-		msg := Trans.FLVTag2RTMPMsg(*tag)
+		msg := Trans.FLVTag2RTMPMsg(tag)
 		chunks := rtmp.Message2Chunks(msg.Message, &msg.Header)
 		err = pushSession.AsyncWrite(chunks)
 		assert.Equal(t, nil, err)

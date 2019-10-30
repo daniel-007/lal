@@ -87,7 +87,7 @@ func main() {
 		}
 
 		//log.Infof("> hook. %+v", tag)
-		hookTag(tag)
+		hookTag(&tag)
 		//log.Infof("< hook. %+v", tag)
 		err = ffw.WriteRaw(tag.Raw)
 		log.FatalIfErrorNotNil(err)

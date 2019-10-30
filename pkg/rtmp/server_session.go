@@ -19,8 +19,6 @@ import (
 	"github.com/q191201771/naza/pkg/unique"
 )
 
-// TODO chef: PubSession SubSession
-
 // TODO chef: 没有进化成Pub Sub时的超时释放
 
 type ServerSessionObserver interface {

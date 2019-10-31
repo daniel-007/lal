@@ -30,8 +30,6 @@ var flvHTTPResponseHeaderStr = "HTTP/1.1 200 OK\r\n" +
 
 var flvHTTPResponseHeader = []byte(flvHTTPResponseHeaderStr)
 
-var flvHeaderBuf13 = []byte{0x46, 0x4c, 0x56, 0x01, 0x05, 0x0, 0x0, 0x0, 0x09, 0x0, 0x0, 0x0, 0x0}
-
 type SubSession struct {
 	UniqueKey string
 
@@ -125,7 +123,7 @@ func (session *SubSession) WriteHTTPResponseHeader() {
 
 func (session *SubSession) WriteFLVHeader() {
 	log.Infof("<----- http flv header. [%s]", session.UniqueKey)
-	session.WriteRawPacket(flvHeaderBuf13)
+	session.WriteRawPacket(FLVHeader)
 }
 
 func (session *SubSession) WriteTag(tag *Tag) {

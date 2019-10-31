@@ -143,7 +143,7 @@ func (session *PullSession) ReadFLVHeader() ([]byte, error) {
 	if err != nil {
 		return flvHeader, err
 	}
-	log.Infof("-----> http flv header. [%s]", session.UniqueKey)
+	log.Infof("-----> httpflv header. [%s]", session.UniqueKey)
 
 	// TODO chef: check flv header's value
 	return flvHeader, nil

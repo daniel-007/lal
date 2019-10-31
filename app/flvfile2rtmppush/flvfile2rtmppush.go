@@ -79,7 +79,7 @@ func main() {
 
 			h := logic.Trans.FLVTagHeader2RTMPHeader(tag.Header)
 
-			if tag.Header.T == httpflv.TagTypeMetadata {
+			if tag.IsMetadata() {
 				if totalBaseTS == 0 {
 					// 第一个metadata直接发送
 					//log.Debugf("CHEFERASEME write metadata.")

@@ -20,9 +20,9 @@ type trans struct {
 
 func (t trans) FLVTagHeader2RTMPHeader(in httpflv.TagHeader) (out rtmp.Header) {
 	out.MsgLen = in.DataSize
-	out.MsgTypeID = in.T
+	out.MsgTypeID = in.Type
 	out.MsgStreamID = rtmp.MSID1
-	switch in.T {
+	switch in.Type {
 	case httpflv.TagTypeMetadata:
 		out.CSID = rtmp.CSIDAMF
 	case httpflv.TagTypeAudio:
@@ -62,7 +62,7 @@ func (t trans) FLVTag2RTMPMsg(tag httpflv.Tag) (msg rtmp.AVMsg) {
 // 音视频内存块发生拷贝
 func (t trans) RTMPMsg2FLVTag(msg rtmp.AVMsg) *httpflv.Tag {
 	var tag httpflv.Tag
-	tag.Header.T = msg.Header.MsgTypeID
+	tag.Header.Type = msg.Header.MsgTypeID
 	tag.Header.DataSize = msg.Header.MsgLen
 	tag.Header.Timestamp = msg.Header.TimestampAbs
 	tag.Raw = httpflv.PackHTTPFLVTag(msg.Header.MsgTypeID, msg.Header.TimestampAbs, msg.Message)

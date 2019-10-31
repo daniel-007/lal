@@ -45,7 +45,7 @@ func BenchmarkCloneTag(b *testing.B) {
 	assert.Equal(b, nil, err)
 	r.Dispose()
 	for i := 0; i < b.N; i++ {
-		tag2 := tag.cloneTag()
+		tag2 := tag.clone()
 		tmp += uint32(tag2.Raw[0])
 	}
 }

@@ -52,7 +52,7 @@ func main() {
 
 		payload := tag.Payload()
 
-		switch tag.Header.T {
+		switch tag.Header.Type {
 		case httpflv.TagTypeAudio:
 			aac.CaptureAAC(afp, payload)
 		case httpflv.TagTypeVideo:

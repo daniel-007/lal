@@ -59,8 +59,7 @@ func (t trans) FLVTag2RTMPMsg(tag httpflv.Tag) (msg rtmp.AVMsg) {
 	return
 }
 
-// 1. 音视频内存块发生拷贝
-// 2. 使用 rtmp header 中的 TimestampAbs 时间
+// 音视频内存块发生拷贝
 func (t trans) RTMPMsg2FLVTag(msg rtmp.AVMsg) *httpflv.Tag {
 	var tag httpflv.Tag
 	tag.Header.T = msg.Header.MsgTypeID

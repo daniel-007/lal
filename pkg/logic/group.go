@@ -168,10 +168,7 @@ func (group *Group) broadcastRTMP(msg rtmp.AVMsg) {
 	)
 
 	// # 1. 设置好 rtmp 头部信息
-	currHeader = msg.Header
-	currHeader.Timestamp = msg.Header.TimestampAbs
-	currHeader.TimestampAbs = msg.Header.TimestampAbs
-	currHeader.MsgStreamID = rtmp.MSID1
+	currHeader = Trans.MakeDefaultRTMPHeader(msg.Header)
 
 	// # 2. 广播。遍历所有rtmp sub session，决定是否转发
 	for session := range group.rtmpSubSessionSet {

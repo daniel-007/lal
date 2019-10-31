@@ -24,6 +24,9 @@ import (
 	log "github.com/q191201771/naza/pkg/nazalog"
 )
 
+// 读取 flv 文件，使用 rtmp 协议发送至服务端，再使用 rtmp 协议从服务端拉流，转换 flv 格式存储为文件，
+// 检查两份 flv 文件是否完全一致。
+
 var (
 	serverAddr = ":10001"
 	pushURL    = "rtmp://127.0.0.1:10001/live/test"

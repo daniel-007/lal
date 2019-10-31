@@ -13,11 +13,6 @@ import (
 	"strings"
 )
 
-type Writer interface {
-	// TODO chef: return error
-	WriteTag(tag *Tag)
-}
-
 var ErrHTTPFLV = errors.New("lal.httpflv: fxxk")
 
 const (

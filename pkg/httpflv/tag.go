@@ -15,11 +15,6 @@ import (
 )
 
 const (
-	TagHeaderSize        int = 11
-	prevTagSizeFieldSize int = 4
-)
-
-const (
 	TagTypeMetadata uint8 = 18
 	TagTypeVideo    uint8 = 9
 	TagTypeAudio    uint8 = 8
@@ -128,7 +123,7 @@ func readTag(rd io.Reader) (tag Tag, err error) {
 	}
 	header := parseTagHeader(rawHeader)
 
-	needed := int(header.DataSize) + prevTagFieldSize
+	needed := int(header.DataSize) + prevTagSizeFieldSize
 	tag.Header = header
 	tag.Raw = make([]byte, TagHeaderSize+needed)
 	copy(tag.Raw, rawHeader)

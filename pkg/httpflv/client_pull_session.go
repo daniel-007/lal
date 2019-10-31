@@ -124,19 +124,16 @@ func (session *PullSession) WriteHTTPRequest() error {
 	return err
 }
 
-func (session *PullSession) ReadHTTPRespHeader() (firstLine string, headers map[string]string, err error) {
+func (session *PullSession) ReadHTTPRespHeader() (statusLine string, headers map[string]string, err error) {
 	// TODO chef: timeout
-	_, firstLine, headers, err = parseHTTPHeader(session.Conn)
-	if err != nil {
+	if statusLine, headers, err = parseHTTPHeader(session.Conn); err != nil {
+		return
+	}
+	if _, _, _, err = parseStatusLine(statusLine); err != nil {
 		return
 	}
 
-	if !strings.Contains(firstLine, "200") || len(headers) == 0 {
-		err = ErrHTTPFLV
-		return
-	}
 	log.Infof("-----> http response header. [%s]", session.UniqueKey)
-
 	return
 }
 

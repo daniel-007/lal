@@ -117,8 +117,6 @@ func TestExample(t *testing.T) {
 	err = pushSession.Push(pushURL)
 	assert.Equal(t, nil, err)
 
-	_, err = fileReader.ReadFLVHeader()
-	assert.Equal(t, nil, err)
 	for {
 		tag, err := fileReader.ReadTag()
 		if err == io.EOF {

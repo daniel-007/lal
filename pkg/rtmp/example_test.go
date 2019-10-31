@@ -121,8 +121,6 @@ func TestExample(t *testing.T) {
 	err = w.WriteRaw(httpflv.FLVHeader)
 	assert.Equal(t, nil, err)
 
-	_, err = r.ReadFLVHeader()
-	assert.Equal(t, nil, err)
 	for {
 		tag, err := r.ReadTag()
 		if err == io.EOF {

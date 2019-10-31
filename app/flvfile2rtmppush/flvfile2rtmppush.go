@@ -63,10 +63,6 @@ func main() {
 		log.FatalIfErrorNotNil(err)
 		log.Infof("open succ. filename=%s", flvFileName)
 
-		flvHeader, err := ffr.ReadFLVHeader()
-		log.FatalIfErrorNotNil(err)
-		log.Infof("read flv header succ. %v", flvHeader)
-
 		hasReadThisBaseTS = false
 
 		for {

@@ -29,7 +29,7 @@ Go语言编写的流媒体 库 / 客户端 / 服务端
 
 Go语言编写的流媒体 库 / 客户端 / 服务器。目前 rtmp / http-flv 部分基本完成了。
 
-#### README 目录
+### README 目录
 
 * 源码框架
 * 编译和运行
@@ -40,9 +40,9 @@ Go语言编写的流媒体 库 / 客户端 / 服务器。目前 rtmp / http-flv 
 * 文档
 * 联系我
 
-#### 源码框架
+### 源码框架
 
-简单来说，主要源码在`app/`和`pkg/`两个目录下，后续我再画些源码架构图。
+简单来说，源码在`app/`和`pkg/`两个目录下，后续我再画些源码架构图。
 
 ```
 app/                  ......各种main包的源码文件，一个子目录对应一个main包，即对应可生成一个可执行文件
@@ -67,7 +67,7 @@ conf/                 ......配置文件目录
 
 目前唯一的第三方依赖（我自己写的 Go 基础库）： [github.com/q191201771/naza](https://github.com/q191201771/naza)
 
-#### 编译和运行
+### 编译和运行
 
 ```
 # 不使用 Go module
@@ -83,7 +83,7 @@ $git clone https://github.com/q191201771/lal.git && cd lal && ./build.sh
 $./bin/lals -c conf/lals.conf.json
 ```
 
-#### 配置文件说明
+### 配置文件说明
 
 ```
 {
@@ -111,9 +111,9 @@ $./bin/lals -c conf/lals.conf.json
 - [rtmp/var.go](https://github.com/q191201771/lal/blob/master/pkg/rtmp/var.go)
 - [httpflv/var.go](https://github.com/q191201771/lal/blob/master/pkg/httpflv/var.go)
 
-#### 性能测试
+### 性能测试
 
-测试场景一：持续推送1000路 rtmp 流至 lals，没有拉流
+测试场景一：持续推送 n 路 rtmp 流至 lals（没有拉流）
 
 | 推流数量 | CPU 占用 | 内存占用（RES） |
 | - | - | - |
@@ -126,7 +126,7 @@ $./bin/lals -c conf/lals.conf.json
 
 **这里列的只是个粗略的数据，还待做更多的性能分析**
 
-#### 测试过的客户端
+### 测试过的客户端
 
 ```
 推流端：
@@ -142,7 +142,7 @@ $./bin/lals -c conf/lals.conf.json
 - srs-bench (srs项目配套的一个压测工具)
 ```
 
-#### Roadmap
+### Roadmap
 
 **有建议、意见、bug、功能等等欢迎提 issue 啊，100% 会回复的。**
 
@@ -188,18 +188,18 @@ lals 服务器目标版本功能如下：
 
 最终目标：
 
-商用级别，性能ok，框架清晰，代码对于初级程序员来说也是可读、可维护的。
+商用级别，性能ok，框架清晰，代码对于**任何初级程序员**来说也是可读、可维护的。
 
 * 实现一个支持多种流媒体协议（比如rtmp, http-flv, hls, rtp/rtcp 等），多种底层传输协议（比如tcp, udp, srt, quic 等）的服务器
 * 所有协议都以模块化的库形式提供给需要的用户使用
 * 提供多种协议的推流客户端、拉流客户端，或者说演示demo
 
-#### 文档
+### 文档
 
 * [rtmp handshake | rtmp握手简单模式和复杂模式](https://pengrl.com/p/20027/)
 * [rtmp协议中的chunk stream id, message stream id, transaction id, message type id](https://pengrl.com/p/25610/)
 
-#### 联系我
+### 联系我
 
 欢迎扫码加我微信，进行技术交流或扯淡。
 

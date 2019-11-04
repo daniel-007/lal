@@ -15,7 +15,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/q191201771/lal/pkg/logic"
@@ -45,7 +44,7 @@ import (
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test -r
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 100
 
-// 读取 flv 文件，返回所有 tag
+// readAllTag 预读取 flv 文件中的 tag，只读取一次
 func readAllTag(filename string) (ret []httpflv.Tag) {
 	var ffr httpflv.FLVFileReader
 	err := ffr.Open(filename)
@@ -65,17 +64,26 @@ func readAllTag(filename string) (ret []httpflv.Tag) {
 	return
 }
 
-func push(tags []httpflv.Tag, url string, isRecursive bool) {
-	var err error
+func push(tags []httpflv.Tag, urlList []string, isRecursive bool) {
+	if len(tags) == 0 || len(urlList) == 0 {
+		return
+	}
 
-	ps := rtmp.NewPushSession(func(option *rtmp.PushSessionOption) {
+	var err error
+	var psList []*rtmp.PushSession
+
+	for i := range urlList {
+		ps := rtmp.NewPushSession(func(option *rtmp.PushSessionOption) {
 		option.ConnectTimeoutMS = 3000
 		option.PushTimeoutMS = 5000
 		option.WriteAVTimeoutMS = 10000
-	})
-	err = ps.Push(url)
-	log.FatalIfErrorNotNil(err)
-	log.Infof("push succ. url=%s", url)
+		})
+		err = ps.Push(urlList[i])
+		log.FatalIfErrorNotNil(err)
+		log.Infof("push succ. url=%s", urlList[i])
+		psList = append(psList, ps)
+	}
+
 
 	var totalBaseTS uint32
 	var prevTS uint32
@@ -100,8 +108,10 @@ func push(tags []httpflv.Tag, url string, isRecursive bool) {
 					//log.Debugf("CHEFERASEME write metadata.")
 					h.TimestampAbs = 0
 					chunks := rtmp.Message2Chunks(tag.Raw[11:11+h.MsgLen], &h)
-					err = ps.AsyncWrite(chunks)
-					log.FatalIfErrorNotNil(err)
+					for _, ps := range psList {
+						err = ps.AsyncWrite(chunks)
+						log.FatalIfErrorNotNil(err)
+					}
 				} else {
 					// noop
 				}
@@ -141,8 +151,10 @@ func push(tags []httpflv.Tag, url string, isRecursive bool) {
 				hasTraceFirstTagTS = true
 			}
 
-			err = ps.AsyncWrite(chunks)
-			log.FatalIfErrorNotNil(err)
+			for _, ps := range psList {
+				err = ps.AsyncWrite(chunks)
+				log.FatalIfErrorNotNil(err)
+			}
 
 			prevTS = h.TimestampAbs
 		}
@@ -177,15 +189,7 @@ func main() {
 	tags := readAllTag(filename)
 	log.Debug(pushURLList, num)
 
-	var wg sync.WaitGroup
-	wg.Add(num)
-	for _, url := range pushURLList {
-		go func(u string) {
-			push(tags, u, isRecursive)
-			wg.Done()
-		}(url)
-	}
-	wg.Wait()
+	push(tags, pushURLList, isRecursive)
 	log.Info("bye.")
 }
 

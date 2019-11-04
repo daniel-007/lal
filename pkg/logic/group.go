@@ -60,7 +60,7 @@ func (group *Group) RunLoop() {
 	<-group.exitChan
 }
 
-func (group *Group) Dispose(err error) {
+func (group *Group) Dispose() {
 	log.Infof("lifecycle dispose group. [%s]", group.UniqueKey)
 	group.exitChan <- struct{}{}
 

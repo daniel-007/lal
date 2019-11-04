@@ -36,11 +36,14 @@ Go语言编写的流媒体 库 / 客户端 / 服务器。目前 rtmp / http-flv 
 ```
 app/                  ......各种main包的源码文件，一个子目录对应一个main包，即对应可生成一个可执行文件
 |-- lals/             ......[最重要的] 流媒体服务器
-|-- flvfile2es        ......将本地flv文件分离成h264/avc es流文件以及aac es流文件
-|-- flvfile2rtmppush  ......rtmp推流客户端，输入是本地flv文件，文件推送完毕后，可循环推送（rtmp push流并不断开）
+|-- flvfile2rtmppush  ......// rtmp 推流客户端，读取本地 flv 文件，使用 rtmp 协议推送出去
+                            //
+                            // 支持循环推送：文件推送完毕后，可循环推送（rtmp push 流并不断开）
+                            // 支持推送多路流：相当于一个 rtmp 推流压测工具
 |-- httpflvpull       ......http-flv拉流客户端
-|-- modflvfile        ......修改本地flv文件
 |-- rtmppull          ......rtmp拉流客户端，存储为本地flv文件
+|-- modflvfile        ......修改本地flv文件
+|-- flvfile2es        ......将本地flv文件分离成h264/avc es流文件以及aac es流文件
 pkg/                  ......源码包
 |-- aac/              ......音频aac编解码格式相关
 |-- avc/              ......视频avc h264编解码格式相关

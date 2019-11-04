@@ -13,6 +13,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/q191201771/lal/pkg/logic"
@@ -23,28 +26,56 @@ import (
 	log "github.com/q191201771/naza/pkg/nazalog"
 )
 
-//rtmp推流客户端，输入是本地flv文件，文件推送完毕后，可循环推送（rtmp push流并不断开）
+// rtmp 推流客户端，读取本地 flv 文件，使用 rtmp 协议推送出去
 //
-// -r 为1时表示当文件推送完毕后，是否循环推送（rtmp push流并不断开）
+// 支持循环推送：文件推送完毕后，可循环推送（rtmp push 流并不断开）
+// 支持推送多路流：相当于一个 rtmp 推流压测工具
 //
-// Usage:
-// ./bin/flvfile2rtmppush -r 1 -i /tmp/test.flv -o rtmp://push.xxx.com/live/testttt
+// Usage of ./bin/flvfile2rtmppush:
+// -i string
+// specify flv file
+// -n int
+// num of push connection (default 1)
+// -o string
+// specify rtmp push url
+// -r	recursive push if reach end of file
+// -v	show bin info
+// Example:
+// ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test
+// ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test -r
+// ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 100
 
-func main() {
+// 读取 flv 文件，返回所有 tag
+func readAllTag(filename string) (ret []httpflv.Tag) {
+	var ffr httpflv.FLVFileReader
+	err := ffr.Open(filename)
+	log.FatalIfErrorNotNil(err)
+	log.Infof("open succ. filename=%s", filename)
+
+	for {
+		tag, err := ffr.ReadTag()
+		if err == io.EOF {
+			log.Info("EOF")
+			break
+		}
+		log.FatalIfErrorNotNil(err)
+		ret = append(ret, tag)
+	}
+	log.Infof("read all tag done. num=%d", len(ret))
+	return
+}
+
+func push(tags []httpflv.Tag, url string, isRecursive bool) {
 	var err error
-
-	flvFileName, rtmpPushURL, isRecursive := parseFlag()
-
-	log.Info(bininfo.StringifySingleLine())
 
 	ps := rtmp.NewPushSession(func(option *rtmp.PushSessionOption) {
 		option.ConnectTimeoutMS = 3000
 		option.PushTimeoutMS = 5000
 		option.WriteAVTimeoutMS = 10000
 	})
-	err = ps.Push(rtmpPushURL)
+	err = ps.Push(url)
 	log.FatalIfErrorNotNil(err)
-	log.Infof("push succ. url=%s", rtmpPushURL)
+	log.Infof("push succ. url=%s", url)
 
 	var totalBaseTS uint32
 	var prevTS uint32
@@ -58,21 +89,9 @@ func main() {
 		log.Infof(" > round. i=%d, totalBaseTS=%d, prevTS=%d, thisBaseTS=%d",
 			i, totalBaseTS, prevTS, thisBaseTS)
 
-		var ffr httpflv.FLVFileReader
-		err = ffr.Open(flvFileName)
-		log.FatalIfErrorNotNil(err)
-		log.Infof("open succ. filename=%s", flvFileName)
-
 		hasReadThisBaseTS = false
 
-		for {
-			tag, err := ffr.ReadTag()
-			if err == io.EOF {
-				log.Info("EOF")
-				break
-			}
-			log.FatalIfErrorNotNil(err)
-
+		for _, tag := range tags {
 			h := logic.Trans.FLVTagHeader2RTMPHeader(tag.Header)
 
 			if tag.IsMetadata() {
@@ -129,7 +148,6 @@ func main() {
 		}
 
 		totalBaseTS = prevTS + 1
-		ffr.Dispose()
 
 		if !isRecursive {
 			break
@@ -137,11 +155,46 @@ func main() {
 	}
 }
 
-func parseFlag() (string, string, bool) {
+func collectPushURLList(urlTmpl string, num int) (ret []string) {
+	if num == 0 {
+		ret = append(ret, urlTmpl)
+		return
+	}
+
+	for i := 0; i < num; i++ {
+		url := strings.Replace(urlTmpl, "{i}", strconv.Itoa(i), -1)
+		ret = append(ret, url)
+	}
+	return
+}
+
+func main() {
+	filename, urlTmpl, num, isRecursive := parseFlag()
+	pushURLList := collectPushURLList(urlTmpl, num)
+
+	log.Info(bininfo.StringifySingleLine())
+
+	tags := readAllTag(filename)
+	log.Debug(pushURLList, num)
+
+	var wg sync.WaitGroup
+	wg.Add(num)
+	for _, url := range pushURLList {
+		go func(u string) {
+			push(tags, u, isRecursive)
+			wg.Done()
+		}(url)
+	}
+	wg.Wait()
+	log.Info("bye.")
+}
+
+func parseFlag() (filename string, urlTmpl string, num int, isRecursive bool) {
 	v := flag.Bool("v", false, "show bin info")
 	i := flag.String("i", "", "specify flv file")
 	o := flag.String("o", "", "specify rtmp push url")
 	r := flag.Bool("r", false, "recursive push if reach end of file")
+	n := flag.Int("n", 1, "num of push connection")
 	flag.Parse()
 	if *v {
 		_, _ = fmt.Fprint(os.Stderr, bininfo.StringifyMultiLine())
@@ -149,7 +202,12 @@ func parseFlag() (string, string, bool) {
 	}
 	if *i == "" || *o == "" {
 		flag.Usage()
+		_, _ = fmt.Fprintf(os.Stderr, `Example:
+  ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test
+  ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test -r
+  ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 100
+`)
 		os.Exit(1)
 	}
-	return *i, *o, *r
+	return *i, *o, *n, *r
 }

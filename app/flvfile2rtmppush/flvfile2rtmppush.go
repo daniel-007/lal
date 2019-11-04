@@ -44,7 +44,7 @@ import (
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test -r
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 100
 
-// readAllTag 预读取 flv 文件中的 tag，只读取一次
+// readAllTag 预读取 flv 文件中的所有 tag，缓存在内存中
 func readAllTag(filename string) (ret []httpflv.Tag) {
 	var ffr httpflv.FLVFileReader
 	err := ffr.Open(filename)
@@ -64,26 +64,25 @@ func readAllTag(filename string) (ret []httpflv.Tag) {
 	return
 }
 
-func push(tags []httpflv.Tag, urlList []string, isRecursive bool) {
-	if len(tags) == 0 || len(urlList) == 0 {
+func push(tags []httpflv.Tag, urls []string, isRecursive bool) {
+	if len(tags) == 0 || len(urls) == 0 {
 		return
 	}
 
 	var err error
 	var psList []*rtmp.PushSession
 
-	for i := range urlList {
+	for i := range urls {
 		ps := rtmp.NewPushSession(func(option *rtmp.PushSessionOption) {
-		option.ConnectTimeoutMS = 3000
-		option.PushTimeoutMS = 5000
-		option.WriteAVTimeoutMS = 10000
+			option.ConnectTimeoutMS = 3000
+			option.PushTimeoutMS = 5000
+			option.WriteAVTimeoutMS = 10000
 		})
-		err = ps.Push(urlList[i])
+		err = ps.Push(urls[i])
 		log.FatalIfErrorNotNil(err)
-		log.Infof("push succ. url=%s", urlList[i])
+		log.Infof("push succ. url=%s", urls[i])
 		psList = append(psList, ps)
 	}
-
 
 	var totalBaseTS uint32
 	var prevTS uint32
@@ -182,14 +181,14 @@ func collectPushURLList(urlTmpl string, num int) (ret []string) {
 
 func main() {
 	filename, urlTmpl, num, isRecursive := parseFlag()
-	pushURLList := collectPushURLList(urlTmpl, num)
+	urls := collectPushURLList(urlTmpl, num)
 
 	log.Info(bininfo.StringifySingleLine())
 
 	tags := readAllTag(filename)
-	log.Debug(pushURLList, num)
+	log.Debug(urls, num)
 
-	push(tags, pushURLList, isRecursive)
+	push(tags, urls, isRecursive)
 	log.Info("bye.")
 }
 

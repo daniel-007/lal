@@ -29,6 +29,17 @@ Go语言编写的流媒体 库 / 客户端 / 服务端
 
 Go语言编写的流媒体 库 / 客户端 / 服务器。目前 rtmp / http-flv 部分基本完成了。
 
+#### README 目录
+
+* 源码框架
+* 编译和运行
+* 配置文件说明
+* 性能测试
+* 测试过的客户端
+* Roadmap
+* 文档
+* 联系我
+
 #### 源码框架
 
 简单来说，主要源码在`app/`和`pkg/`两个目录下，后续我再画些源码架构图。
@@ -100,6 +111,21 @@ $./bin/lals -c conf/lals.conf.json
 - [rtmp/var.go](https://github.com/q191201771/lal/blob/master/pkg/rtmp/var.go)
 - [httpflv/var.go](https://github.com/q191201771/lal/blob/master/pkg/httpflv/var.go)
 
+#### 性能测试
+
+测试场景一：持续推送1000路 rtmp 流至 lals，没有拉流
+
+| 推流数量 | CPU 占用 | 内存占用（RES） |
+| - | - | - |
+| 1000 | （占单个核的）16% | 104MB |
+
+* 测试机：32核16G（lals 服务器和压测工具同时跑在这一个机器上）
+* 压测工具：lal 中的 /app/flvfile2rtmppush
+* 推流码率：使用 srs-bench 中的 flv 文件，大概200kbps
+* lals 版本：基于 git commit: ac41fefdde6579da8b94fa71f74827fcdac2d0ea*
+
+**这里列的只是个粗略的数据，还待做更多的性能分析**
+
 #### 测试过的客户端
 
 ```
@@ -116,11 +142,11 @@ $./bin/lals -c conf/lals.conf.json
 - srs-bench (srs项目配套的一个压测工具)
 ```
 
-#### roadmap
+#### Roadmap
 
 **有建议、意见、bug、功能等等欢迎提 issue 啊，100% 会回复的。**
 
-lals 服务器目标版本roadmap如下：
+lals 服务器目标版本功能如下：
 
 **v1.0.0**
 
@@ -162,7 +188,7 @@ lals 服务器目标版本roadmap如下：
 
 最终目标：
 
-性能ok，框架清晰，代码对于任何新手来说都是可读可维护的。
+商用级别，性能ok，框架清晰，代码对于初级程序员来说也是可读、可维护的。
 
 * 实现一个支持多种流媒体协议（比如rtmp, http-flv, hls, rtp/rtcp 等），多种底层传输协议（比如tcp, udp, srt, quic 等）的服务器
 * 所有协议都以模块化的库形式提供给需要的用户使用

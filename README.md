@@ -3,7 +3,7 @@
 <img alt="Wide" src="https://pengrl.com/images/other/lallogo.png">
 </a>
 <br>
-Go语言编写的流媒体 库 / 客户端 / 服务端
+Go语言编写的直播流媒体 库 / 客户端 / 服务端
 <br><br>
 <a title="TravisCI" target="_blank" href="https://www.travis-ci.org/q191201771/lal"><img src="https://www.travis-ci.org/q191201771/lal.svg?branch=master"></a>
 <a title="codecov" target="_blank" href="https://codecov.io/gh/q191201771/lal"><img src="https://codecov.io/gh/q191201771/lal/branch/master/graph/badge.svg?style=flat-square"></a>
@@ -27,7 +27,20 @@ Go语言编写的流媒体 库 / 客户端 / 服务端
 
 ---
 
-Go语言编写的直播流媒体 库 / 客户端 / 服务器。目前 rtmp / http-flv 部分基本完成了。
+Go语言编写的直播流媒体 库 / 客户端 / 服务端。
+
+本项目定位商用级别，遵循的原则或者说最终目标是：
+
+* ~~没有蛀。。~~
+* 高度可读可维护。框架清晰，模块化，按业务层，协议层，传输层分割。初级程序员也可以快速参与
+* 能快速加入各种协议（rtmp / http-flv / hls, rtp / rtcp / webrtc, quic, srt, over tcp, over udp...）
+* 高性能
+
+目前 rtmp / http-flv 部分基本完成了。第一个大版本会实现直播源站以及直播 CDN 分发相关的功能。
+
+如果你对 Go 语言感兴趣，通过本项目你可以学习一些 Go 语言的通用知识，以及如何使用 Go 开发与优化一个大带宽（> 1Gb/s）的IO密集型服务端网络程序。
+
+如果你是流媒体、音视频相关领域的开发者，那么关注一波就完事了。一个 star 你买不了吃亏，买不了上当 :)
 
 ### README 目录
 
@@ -127,7 +140,7 @@ $./bin/lals -c conf/lals.conf.json
 * 测试机：32核16G（lals 服务器和压测工具同时跑在这一个机器上）
 * 压测工具：lal 中的 /app/flvfile2rtmppush
 * 推流码率：使用 srs-bench 中的 flv 文件，大概200kbps
-* lals 版本：基于 git commit: ac41fefdde6579da8b94fa71f74827fcdac2d0ea*
+* lals 版本：基于 git commit: fc0b04651af53a68758f41e5dfccdb7838e55a45
 
 *由于测试机是台共用的机器，上面还跑了许多其他服务，这里列的只是个粗略的数据，还待做更多的性能分析以及优化*
 
@@ -190,14 +203,6 @@ lals 服务器目标版本功能如下：
 
 - hls
 - h265
-
-最终目标：
-
-商用级别，性能ok，框架清晰，代码对于**任何初级程序员**来说也是可读、可维护的。
-
-* 实现一个支持多种流媒体协议（比如rtmp, http-flv, hls, rtp/rtcp 等），多种底层传输协议（比如tcp, udp, srt, quic 等）的服务器
-* 所有协议都以模块化的库形式提供给需要的用户使用
-* 提供多种协议的推流客户端、拉流客户端，或者说演示demo
 
 ### 文档
 

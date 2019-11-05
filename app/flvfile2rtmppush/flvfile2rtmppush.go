@@ -44,7 +44,6 @@ import (
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test -r
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 1000
 
-
 func main() {
 	log.Info(bininfo.StringifySingleLine())
 

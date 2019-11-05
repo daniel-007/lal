@@ -42,7 +42,21 @@ import (
 // Example:
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test
 // ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test -r
-// ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 100
+// ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 1000
+
+
+func main() {
+	log.Info(bininfo.StringifySingleLine())
+
+	filename, urlTmpl, num, isRecursive := parseFlag()
+	urls := collect(urlTmpl, num)
+
+	tags := readAllTag(filename)
+	log.Debug(urls, num)
+
+	push(tags, urls, isRecursive)
+	log.Info("bye.")
+}
 
 // readAllTag 预读取 flv 文件中的所有 tag，缓存在内存中
 func readAllTag(filename string) (ret []httpflv.Tag) {
@@ -166,30 +180,12 @@ func push(tags []httpflv.Tag, urls []string, isRecursive bool) {
 	}
 }
 
-func collectPushURLList(urlTmpl string, num int) (ret []string) {
-	if num == 0 {
-		ret = append(ret, urlTmpl)
-		return
-	}
-
+func collect(urlTmpl string, num int) (urls []string) {
 	for i := 0; i < num; i++ {
 		url := strings.Replace(urlTmpl, "{i}", strconv.Itoa(i), -1)
-		ret = append(ret, url)
+		urls = append(urls, url)
 	}
 	return
-}
-
-func main() {
-	filename, urlTmpl, num, isRecursive := parseFlag()
-	urls := collectPushURLList(urlTmpl, num)
-
-	log.Info(bininfo.StringifySingleLine())
-
-	tags := readAllTag(filename)
-	log.Debug(urls, num)
-
-	push(tags, urls, isRecursive)
-	log.Info("bye.")
 }
 
 func parseFlag() (filename string, urlTmpl string, num int, isRecursive bool) {
@@ -208,7 +204,7 @@ func parseFlag() (filename string, urlTmpl string, num int, isRecursive bool) {
 		_, _ = fmt.Fprintf(os.Stderr, `Example:
   ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test
   ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test -r
-  ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 100
+  ./bin/flvfile2rtmppush -i testdata/test.flv -o rtmp://127.0.0.1:19350/live/test_{i} -r -n 1000
 `)
 		os.Exit(1)
 	}

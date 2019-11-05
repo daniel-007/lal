@@ -138,11 +138,11 @@ $./bin/lals -c conf/lals.conf.json
 | 1000 | （占单个核的）30% | 120MB |
 
 * 测试机：32核16G（lals 服务器和压测工具同时跑在这一个机器上）
-* 压测工具：lal 中的 /app/flvfile2rtmppush
-* 推流码率：使用 srs-bench 中的 flv 文件，大概200kbps
+* 压测工具：lal 中的 `/app/flvfile2rtmppush` 以及 `/app/rtmppull`
+* 推流码率：使用 `srs-bench` 中的 flv 文件，大概200kbps
 * lals 版本：基于 git commit: fc0b04651af53a68758f41e5dfccdb7838e55a45
 
-*由于测试机是台共用的机器，上面还跑了许多其他服务，这里列的只是个粗略的数据，还待做更多的性能分析以及优化*
+*由于测试机是台共用的机器，上面还跑了许多其他服务，这里列的只是个粗略的数据，还待做更多的性能分析以及优化。如果你对性能感兴趣，欢迎进行测试并将结果反馈给我。*
 
 ### 测试过的第三方客户端
 

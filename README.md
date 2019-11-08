@@ -3,7 +3,7 @@
 <img alt="Wide" src="https://pengrl.com/images/other/lallogo.png">
 </a>
 <br>
-Go语言编写的直播流媒体 库 / 客户端 / 服务端
+Go语言编写的直播流媒体网络传输服务器
 <br><br>
 <a title="TravisCI" target="_blank" href="https://www.travis-ci.org/q191201771/lal"><img src="https://www.travis-ci.org/q191201771/lal.svg?branch=master"></a>
 <a title="codecov" target="_blank" href="https://codecov.io/gh/q191201771/lal"><img src="https://codecov.io/gh/q191201771/lal/branch/master/graph/badge.svg?style=flat-square"></a>
@@ -27,20 +27,14 @@ Go语言编写的直播流媒体 库 / 客户端 / 服务端
 
 ---
 
-Go语言编写的直播流媒体 库 / 客户端 / 服务端。
-
-本项目定位商用级别，遵循的原则或者说最终目标是：
+Go语言编写的直播流媒体网络传输服务器。本项目遵循的原则或者说最终目标是：
 
 * ~~没有蛀。。~~
-* 高度可读可维护。框架清晰，模块化，按业务层，协议层，传输层分割。初级程序员也可以快速参与
-* 能快速加入各种协议（rtmp / http-flv / hls, rtp / rtcp / webrtc, quic, srt, over tcp, over udp...）
+* 可读可维护。框架清晰，模块化，按业务逻辑层，协议层，传输层分层。
+* 可快速集成各种协议（rtmp / http-flv / hls, rtp / rtcp / webrtc, quic, srt, over tcp, over udp...）
 * 高性能
 
-目前 rtmp / http-flv 部分基本完成了。第一个大版本会实现直播源站以及直播 CDN 分发相关的功能。
-
-如果你对 Go 语言感兴趣，通过本项目你可以学习一些 Go 语言的通用知识，以及如何使用 Go 开发与优化一个大带宽（> 1Gb/s）的IO密集型服务端网络程序。
-
-如果你是流媒体、音视频相关领域的开发者，那么关注一波就完事了。一个 star 你买不了吃亏，买不了上当 :)
+目前 rtmp / http-flv 部分基本完成了。第一个目标大版本会实现直播源站以及直播 CDN 分发相关的功能。
 
 ### README 目录
 

@@ -51,22 +51,22 @@ Go语言编写的直播流媒体网络传输服务器。本项目遵循的原则
 简单来说，源码在`app/`和`pkg/`两个目录下，后续我再画些源码架构图。
 
 ```
-app/                  ......各种main包的源码文件，一个子目录对应一个main包，即对应可生成一个可执行文件
+app/                  ......各种 main 包的源码文件，一个子目录对应一个 main 包，即对应可生成一个可执行文件
 |-- lals/             ......[最重要的] 流媒体服务器
 |-- flvfile2rtmppush  ......// rtmp 推流客户端，读取本地 flv 文件，使用 rtmp 协议推送出去
                             //
                             // 支持循环推送：文件推送完毕后，可循环推送（rtmp push 流并不断开）
                             // 支持推送多路流：相当于一个 rtmp 推流压测工具
-|-- httpflvpull       ......http-flv拉流客户端
-|-- rtmppull          ......rtmp拉流客户端，存储为本地flv文件
-|-- modflvfile        ......修改本地flv文件
-|-- flvfile2es        ......将本地flv文件分离成h264/avc es流文件以及aac es流文件
+|-- httpflvpull       ......http-flv 拉流客户端
+|-- rtmppull          ......rtmp 拉流客户端，存储为本地 flv 文件
+|-- modflvfile        ......修改本地 flv 文件
+|-- flvfile2es        ......将本地 flv 文件分离成 h264/avc es 流文件以及 aac es 流文件
 pkg/                  ......源码包
-|-- aac/              ......音频aac编解码格式相关
-|-- avc/              ......视频avc h264编解码格式相关
-|-- httpflv/          ......http-flv协议
-|-- logic/            ......lals服务器的上层业务
-|-- rtmp/             ......rtmp协议
+|-- aac/              ......音频 aac 编解码格式相关
+|-- avc/              ......视频 avc h264 编解码格式相关
+|-- httpflv/          ......http-flv 协议
+|-- logic/            ......lals 服务器的上层业务
+|-- rtmp/             ......rtmp 协议
 bin/                  ......可执行文件编译输出目录
 conf/                 ......配置文件目录
 ```
@@ -81,7 +81,7 @@ $go get -u github.com/q191201771/lal
 # cd into $GOPATH/src/github.com/q191201771/lal
 $./build.sh
 
-# 使用 go module
+# 使用 Go module
 $export GOPROXY=https://goproxy.cn
 $git clone https://github.com/q191201771/lal.git && cd lal && ./build.sh
 

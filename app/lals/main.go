@@ -30,7 +30,7 @@ func main() {
 	initLog(config.Log)
 	log.Infof("bininfo: %s", bininfo.StringifySingleLine())
 
-	sm = logic.NewServerManager(config)
+	sm = logic.NewServerManager(&config.Config)
 
 	if config.PProf.Addr != "" {
 		go runWebPProf(config.PProf.Addr)
@@ -55,8 +55,8 @@ func parseFlag() string {
 	return *cf
 }
 
-func loadConf(confFile string) *logic.Config {
-	config, err := logic.LoadConf(confFile)
+func loadConf(confFile string) *Config {
+	config, err := LoadConf(confFile)
 	if err != nil {
 		log.Errorf("load conf failed. file=%s err=%+v", confFile, err)
 		os.Exit(1)

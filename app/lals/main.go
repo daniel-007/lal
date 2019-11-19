@@ -50,6 +50,10 @@ func parseFlag() string {
 	}
 	if *cf == "" {
 		flag.Usage()
+		_, _ = fmt.Fprintf(os.Stderr, `
+Example:
+  ./bin/lals -c ./conf/lals.conf.json
+`)
 		os.Exit(1)
 	}
 	return *cf

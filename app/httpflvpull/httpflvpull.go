@@ -10,12 +10,13 @@ package main
 
 import (
 	"flag"
+	"os"
+	"time"
+
 	"github.com/q191201771/lal/pkg/httpflv"
 	"github.com/q191201771/naza/pkg/bitrate"
 	"github.com/q191201771/naza/pkg/nazaatomic"
 	log "github.com/q191201771/naza/pkg/nazalog"
-	"os"
-	"time"
 )
 
 // TODO chef: 存储成 flv 文件

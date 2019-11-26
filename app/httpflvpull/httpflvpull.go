@@ -31,7 +31,7 @@ func main() {
 	go func() {
 		for runFlag.Load() {
 			time.Sleep(1 * time.Second)
-			log.Infof("bitrate. audio=%dkb/s, video=%dkb/s", abr.Rate(), vbr.Rate())
+			log.Infof("bitrate. audio=%fkb/s, video=%fkb/s", abr.Rate(), vbr.Rate())
 		}
 	}()
 	err := session.Pull(url, func(tag httpflv.Tag) {

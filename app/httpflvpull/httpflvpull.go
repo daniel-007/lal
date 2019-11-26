@@ -24,8 +24,8 @@ import (
 func main() {
 	url := parseFlag()
 	session := httpflv.NewPullSession()
-	abr := bitrate.NewBitrate()
-	vbr := bitrate.NewBitrate()
+	abr := bitrate.New()
+	vbr := bitrate.New()
 	var runFlag nazaatomic.Bool
 	runFlag.Store(true)
 	go func() {
